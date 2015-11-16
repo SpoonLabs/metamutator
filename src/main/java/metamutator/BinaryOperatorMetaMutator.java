@@ -23,42 +23,52 @@ import spoon.reflect.reference.CtTypeReference;
 /**
  * inserts a mutation hotspot for each binary operator
  */
-public class BinaryOperatorMetaMutator extends AbstractProcessor<CtBinaryOperator<Boolean>> {
+public class BinaryOperatorMetaMutator extends
+		AbstractProcessor<CtBinaryOperator<Boolean>> {
 
 	public static final String SELECTOR_CLASS = Selector.class.getName();
 
 	private static int index = 0;
 
-	private static final EnumSet<BinaryOperatorKind> LOGICAL_OPERATORS = EnumSet.of(BinaryOperatorKind.AND, BinaryOperatorKind.OR);
-	private static final EnumSet<BinaryOperatorKind> COMPARISON_OPERATORS = EnumSet.of(BinaryOperatorKind.EQ, BinaryOperatorKind.GE, BinaryOperatorKind.GT, BinaryOperatorKind.LE, BinaryOperatorKind.LT, BinaryOperatorKind.NE);
-	private static final EnumSet<BinaryOperatorKind> REDUCED_COMPARISON_OPERATORS = EnumSet.of(BinaryOperatorKind.EQ, BinaryOperatorKind.NE);
+	private static final EnumSet<BinaryOperatorKind> LOGICAL_OPERATORS = EnumSet
+			.of(BinaryOperatorKind.AND, BinaryOperatorKind.OR);
+	private static final EnumSet<BinaryOperatorKind> COMPARISON_OPERATORS = EnumSet
+			.of(BinaryOperatorKind.EQ, BinaryOperatorKind.GE,
+					BinaryOperatorKind.GT, BinaryOperatorKind.LE,
+					BinaryOperatorKind.LT, BinaryOperatorKind.NE);
+	private static final EnumSet<BinaryOperatorKind> REDUCED_COMPARISON_OPERATORS = EnumSet
+			.of(BinaryOperatorKind.EQ, BinaryOperatorKind.NE);
 
 	private Set<CtElement> hostSpots = Sets.newHashSet();
 
 	@Override
 	public boolean isToBeProcessed(CtBinaryOperator<Boolean> element) {
-//		if (element.getParent(CtAnonymousExecutable.class)!=null) {
-//			System.out.println(element.getParent(CtAnonymousExecutable.class));
-//		}
+		// if (element.getParent(CtAnonymousExecutable.class)!=null) {
+		// System.out.println(element.getParent(CtAnonymousExecutable.class));
+		// }
 		try {
 			getTopLevelClass(element);
 		} catch (NullPointerException e) {
 			return false;
 		}
-		
+
 		// not in constructors because we use static fields
-		if (element.getParent(CtConstructor.class) !=null) {
-			return false;
-		}
-		
-		// not in fields declaration because we use static fields
-		if (element.getParent(CtField.class) !=null) {
+		if (element.getParent(CtConstructor.class) != null) {
 			return false;
 		}
 
-		return (LOGICAL_OPERATORS.contains(element.getKind()) || COMPARISON_OPERATORS.contains(element.getKind()))
-				&& (element.getParent(CtAnonymousExecutable.class)==null) // not in static block				
-				;
+		// not in fields declaration because we use static fields
+		if (element.getParent(CtField.class) != null) {
+			return false;
+		}
+
+		return (LOGICAL_OPERATORS.contains(element.getKind()) || COMPARISON_OPERATORS
+				.contains(element.getKind()))
+				&& (element.getParent(CtAnonymousExecutable.class) == null) // not
+																			// in
+																			// static
+																			// block
+		;
 	}
 
 	public void process(CtBinaryOperator<Boolean> binaryOperator) {
@@ -67,24 +77,24 @@ public class BinaryOperatorMetaMutator extends AbstractProcessor<CtBinaryOperato
 		if (LOGICAL_OPERATORS.contains(kind)) {
 			mutateOperator(binaryOperator, LOGICAL_OPERATORS);
 		} else if (COMPARISON_OPERATORS.contains(kind)) {
-//			if (isPrimitiveNotBoolean(binaryOperator.getLeftHandOperand())
-//				|| isPrimitiveNotBoolean(binaryOperator.getRightHandOperand())) 
+			// if (isPrimitiveNotBoolean(binaryOperator.getLeftHandOperand())
+			// || isPrimitiveNotBoolean(binaryOperator.getRightHandOperand()))
 			{
 				mutateOperator(binaryOperator, COMPARISON_OPERATORS);
-			} 
-//			else {
-//				mutateOperator(binaryOperator, REDUCED_COMPARISON_OPERATORS);
-//			}
+			}
+			// else {
+			// mutateOperator(binaryOperator, REDUCED_COMPARISON_OPERATORS);
+			// }
 		}
 	}
 
 	private boolean isPrimitiveNotBoolean(CtExpression<?> operand) {
-		return operand.getType().isPrimitive() 
+		return operand.getType().isPrimitive()
 				&& !operand.getType().getSimpleName().equals("boolean")
 				&& !operand.getType().getSimpleName().equals("Boolean");
 	}
 
-	/**
+/**
 	 * Converts "a op b" bean op one of "<", "<=", "==", ">=", "!=" to:
 	 *    (  (op(1, 0, "<")  && (a < b))
 	 *    || (op(1, 1, "<=") && (a <= b))
@@ -97,13 +107,18 @@ public class BinaryOperatorMetaMutator extends AbstractProcessor<CtBinaryOperato
 	 * @param expression
 	 * @param operators
 	 */
-	private void mutateOperator(final CtBinaryOperator<Boolean> expression, EnumSet<BinaryOperatorKind> operators) {
+	private void mutateOperator(final CtBinaryOperator<Boolean> expression,
+			EnumSet<BinaryOperatorKind> operators) {
 		if (!operators.contains(expression.getKind())) {
 			throw new IllegalArgumentException("not consistent");
 		}
 
-		if (alreadyInHotsSpot(expression) || expression.toString().contains(".is(\"")) {
-			System.out.println(String.format("Expression '%s' ignored because it is included in previous hot spot", expression));
+		if (alreadyInHotsSpot(expression)
+				|| expression.toString().contains(".is(\"")) {
+			System.out
+					.println(String
+							.format("Expression '%s' ignored because it is included in previous hot spot",
+									expression));
 			return;
 		}
 
@@ -111,14 +126,15 @@ public class BinaryOperatorMetaMutator extends AbstractProcessor<CtBinaryOperato
 
 		String originalKind = expression.getKind().toString();
 		String newExpression = operators
-			.stream()
-			.map(kind -> {
-				expression.setKind(kind);
-				return String.format("(_s%s.is(\"%s\") && (%s))", thisIndex, kind, expression);
-			})
-			.collect(Collectors.joining(" || "));
+				.stream()
+				.map(kind -> {
+					expression.setKind(kind);
+					return String.format("(_s%s.is(\"%s\") && (%s))",
+							thisIndex, kind, expression);
+				}).collect(Collectors.joining(" || "));
 
-		CtCodeSnippetExpression<Boolean> codeSnippet =  getFactory().Core().createCodeSnippetExpression();
+		CtCodeSnippetExpression<Boolean> codeSnippet = getFactory().Core()
+				.createCodeSnippetExpression();
 		codeSnippet.setValue('(' + newExpression + ')');
 
 		expression.replace(codeSnippet);
@@ -130,14 +146,18 @@ public class BinaryOperatorMetaMutator extends AbstractProcessor<CtBinaryOperato
 	}
 
 	/**
-	 * Check if this sub expression was already inside an uppermost expression that was processed has a hot spot.
-	 * This version does not allowed conflicting hot spots
-	 * @param element the current expression to test
-	 * @return true if this expression is descendant of an already processed expression
+	 * Check if this sub expression was already inside an uppermost expression
+	 * that was processed has a hot spot. This version does not allowed
+	 * conflicting hot spots
+	 * 
+	 * @param element
+	 *            the current expression to test
+	 * @return true if this expression is descendant of an already processed
+	 *         expression
 	 */
 	private boolean alreadyInHotsSpot(CtElement element) {
 		CtElement parent = element.getParent();
-		while (!isTopLevel(parent) && parent!=null) {
+		while (!isTopLevel(parent) && parent != null) {
 			if (hostSpots.contains(parent))
 				return true;
 
@@ -151,26 +171,32 @@ public class BinaryOperatorMetaMutator extends AbstractProcessor<CtBinaryOperato
 		return parent instanceof CtClass && ((CtClass) parent).isTopLevel();
 	}
 
-	private void addVariableToClass(CtBinaryOperator element, String originalKind, int index, EnumSet<BinaryOperatorKind> operators) {
+	private void addVariableToClass(CtBinaryOperator element,
+			String originalKind, int index,
+			EnumSet<BinaryOperatorKind> operators) {
 
-		long hashCode = (element.getPosition().toString()+element.getParent().toString()).hashCode();
-	
-		CtTypeReference<Object> fieldType = getFactory().Type().createTypeParameterReference(SELECTOR_CLASS);
+		long hashCode = (element.getPosition().toString() + element.getParent()
+				.toString()).hashCode();
+
+		CtTypeReference<Object> fieldType = getFactory().Type()
+				.createTypeParameterReference(SELECTOR_CLASS);
 		String selectorId = "_s" + index;
-		
-		CtCodeSnippetExpression<Object> codeSnippet =  getFactory().Core().createCodeSnippetExpression();
 
-		StringBuilder sb = new StringBuilder(SELECTOR_CLASS + ".of(").append(index);
+		CtCodeSnippetExpression<Object> codeSnippet = getFactory().Core()
+				.createCodeSnippetExpression();
+
+		StringBuilder sb = new StringBuilder(SELECTOR_CLASS + ".of(")
+				.append(index);
 
 		sb.append(',');
-			
+
 		// now the options
 		sb.append("new String[]{");
-		
-	    // the original operator, always the first one
-    	sb.append('"').append(originalKind).append('"');
-	    
-	    // the other alternatives
+
+		// the original operator, always the first one
+		sb.append('"').append(originalKind).append('"');
+
+		// the other alternatives
 		for (BinaryOperatorKind kind : operators) {
 			if (kind.toString().equals(originalKind)) {
 				continue;
@@ -182,18 +208,23 @@ public class BinaryOperatorMetaMutator extends AbstractProcessor<CtBinaryOperato
 
 		// adding location
 		if (element.getParent(CtType.class).isTopLevel()) {
-			sb.append(".in("+element.getParent(CtType.class).getQualifiedName()+".class)");
+			sb.append(".in("
+					+ element.getParent(CtType.class).getQualifiedName()
+					+ ".class)");
 		}
 
-	    // adding identifier
-	    sb.append(".id(\""+selectorId+"\")");
-	    
+		// adding identifier
+		sb.append(".id(\"" + selectorId + "\")");
+
 		codeSnippet.setValue(sb.toString());
 
 		CtClass<?> type = getTopLevelClass(element);
 
-
-		CtField<Object> field = getFactory().Field().create(type, EnumSet.of(ModifierKind.FINAL, ModifierKind.PRIVATE, ModifierKind.STATIC),fieldType, selectorId , codeSnippet);
+		CtField<Object> field = getFactory().Field().create(
+				type,
+				EnumSet.of(ModifierKind.FINAL, ModifierKind.PRIVATE,
+						ModifierKind.STATIC), fieldType, selectorId,
+				codeSnippet);
 
 		type.addField(field);
 	}
