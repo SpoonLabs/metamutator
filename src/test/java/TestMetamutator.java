@@ -37,7 +37,7 @@ public class TestMetamutator {
 
         // creating a new instance of the class
         Object o = ((Class)bsh.eval(c.toString())).newInstance();        
-        assertEquals(2,Selector.getAllSelectors().size());
+        assertEquals(3,Selector.getAllSelectors().size());
         
         // test with the first
         Selector sel=Selector.getSelectorByName("_s1");

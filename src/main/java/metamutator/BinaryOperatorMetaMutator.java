@@ -77,21 +77,25 @@ public class BinaryOperatorMetaMutator extends
 		if (LOGICAL_OPERATORS.contains(kind)) {
 			mutateOperator(binaryOperator, LOGICAL_OPERATORS);
 		} else if (COMPARISON_OPERATORS.contains(kind)) {
-			// if (isPrimitiveNotBoolean(binaryOperator.getLeftHandOperand())
-			// || isPrimitiveNotBoolean(binaryOperator.getRightHandOperand()))
+			if (isNumber(binaryOperator.getLeftHandOperand())
+			 || isNumber(binaryOperator.getRightHandOperand()))
 			{
 				mutateOperator(binaryOperator, COMPARISON_OPERATORS);
 			}
-			// else {
-			// mutateOperator(binaryOperator, REDUCED_COMPARISON_OPERATORS);
-			// }
+			 else {
+			 mutateOperator(binaryOperator, REDUCED_COMPARISON_OPERATORS);
+			 }
 		}
 	}
 
-	private boolean isPrimitiveNotBoolean(CtExpression<?> operand) {
-		return operand.getType().isPrimitive()
-				&& !operand.getType().getSimpleName().equals("boolean")
-				&& !operand.getType().getSimpleName().equals("Boolean");
+	private boolean isNumber(CtExpression<?> operand) {
+		return operand.getType().getSimpleName().equals("int")
+			|| operand.getType().getSimpleName().equals("long")
+			|| operand.getType().getSimpleName().equals("byte")
+			|| operand.getType().getSimpleName().equals("char")
+		|| operand.getType().getSimpleName().equals("float")
+		|| operand.getType().getSimpleName().equals("double")
+		|| Number.class.isAssignableFrom(operand.getType().getActualClass());
 	}
 
 /**

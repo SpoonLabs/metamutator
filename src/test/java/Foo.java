@@ -8,4 +8,7 @@ public class Foo {
 		return a > b;
 	}
 
+	public boolean op3(Class c) {
+		return Foo.class==c;
+	}
 }
