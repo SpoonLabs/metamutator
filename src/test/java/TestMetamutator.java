@@ -16,23 +16,23 @@ import static org.apache.commons.lang.reflect.MethodUtils.*;
 
 public class TestMetamutator {
 
-	@Test
-	public void testBinaryOperatorMetaMutator() throws Exception {
-		// build the model and apply the transformation
-		Launcher l = new Launcher();
-		l.addInputResource("src/test/java");
-		l.addProcessor(new BinaryOperatorMetaMutator());
-		l.run();
+    @Test
+    public void testBinaryOperatorMetaMutator() throws Exception {
+        // build the model and apply the transformation
+        Launcher l = new Launcher();
+        l.addInputResource("src/test/java");
+        l.addProcessor(new BinaryOperatorMetaMutator());
+        l.run();
 
-		// now we get the 
-		List<CtClass> classes = l.getFactory().Package().getRootPackage().getElements(new TypeFilter(CtClass.class));
-		CtClass c = classes.get(0);
-		System.out.println(c.toString());
+        // now we get the 
+        List<CtClass> classes = l.getFactory().Package().getRootPackage().getElements(new TypeFilter(CtClass.class));
+        CtClass c = classes.get(0);
+        System.out.println(c.toString());
 
-		// we prepare an interpreter for the transformed code
-		Interpreter bsh = new Interpreter();
+        // we prepare an interpreter for the transformed code
+        Interpreter bsh = new Interpreter();
 
-		// there is no selector before loading the class
+        // there is no selector before loading the class
         assertEquals(0,Selector.getAllSelectors().size());
 
         // creating a new instance of the class
@@ -56,8 +56,8 @@ public class TestMetamutator {
         
         // impossible option
         try {
-        	sel.choose(2);
-        	fail();
+            sel.choose(2);
+            fail();
         }
         catch (IllegalArgumentException expected){}
 
@@ -76,5 +76,5 @@ public class TestMetamutator {
         assertEquals(false, invokeExactMethod(o, "op2", new Object[] {3, 3}));
         assertEquals(true, invokeExactMethod(o, "op2", new Object[] {3, 4}));        
         
-	}
+    }
 }
