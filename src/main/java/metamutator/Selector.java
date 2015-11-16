@@ -73,7 +73,7 @@ public class Selector {
 		return new ArrayList<Selector>(selectors.values());
 	}
 
-	public static Selector getSelectorsByName(String name) {
+	public static Selector getSelectorByName(String name) {
 		for (Selector s : selectors.values()) {
 			if (name.equals(s.identifier)) {
 				return s;
