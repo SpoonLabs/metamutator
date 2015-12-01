@@ -7,6 +7,11 @@ metamutator: a muta-mutation tool for Java
 mvn test
 ```
 
+In the context of this project, a metaprogram is a program with all mutations inserted at compile-time.
+However, the mutations are all desactivated by default, meaning that the metaprogram behaves as the original one.
+Mutations can be activated and desactivated one by one at runtime.
+
+
 Mutation operators
 ------------------
 
