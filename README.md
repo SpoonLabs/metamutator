@@ -7,7 +7,35 @@ metamutator: a muta-mutation tool for Java
 mvn test
 ```
 
+In the context of this project, a metaprogram is a program with all mutations inserted at compile-time.
+However, the mutations are all desactivated by default, meaning that the metaprogram behaves as the original one.
+Mutations can be activated and desactivated one by one at runtime.
+
+
+Mutation operators
+------------------
+
+Logical comparison (switch between ">", ">=", "!=", etc).
+
+Usage
+------
+
+Let's assume your project is called `foo` and contains two folders `src/main/java` and `src/test/java` with a test class `PgmTest`.
+
+1) Create the metaprogram
+
+    java -jar spoon.jar -i src/main/java -p metamutator.BinaryOperatorMetaMutator -o spooned
+    
+2) Compile the metaprogram
+
+    javac `find spooned -name "*.java"`
+    
+3) Run the test class (with the metaprogram in the classpath and not the original program)
+
+    MutantSearchSpaceExplorator.runMetaProgramWith(PgmTest.class)
+    
+
 Credits
 -------
 
-Based on awesoem code by Carlos Fau and Alejandro Russel (<https://github.com/totemcaf/code-fixer/>)
+Based on awesome code by Carlos Fau and Alejandro Russel (<https://github.com/totemcaf/code-fixer/>)

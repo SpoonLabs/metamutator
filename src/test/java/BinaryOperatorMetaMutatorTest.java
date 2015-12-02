@@ -1,8 +1,6 @@
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
-import java.util.List;
-
+import static org.apache.commons.lang.reflect.MethodUtils.invokeExactMethod;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import metamutator.BinaryOperatorMetaMutator;
 import metamutator.Selector;
 
@@ -10,11 +8,10 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.reflect.visitor.filter.NameFilter;
 import bsh.Interpreter;
-import static org.apache.commons.lang.reflect.MethodUtils.*;
 
-public class TestMetamutator {
+public class BinaryOperatorMetaMutatorTest {
 
     @Test
     public void testBinaryOperatorMetaMutator() throws Exception {
@@ -24,9 +21,11 @@ public class TestMetamutator {
         l.addProcessor(new BinaryOperatorMetaMutator());
         l.run();
 
-        // now we get the 
-        List<CtClass> classes = l.getFactory().Package().getRootPackage().getElements(new TypeFilter(CtClass.class));
-        CtClass c = classes.get(0);
+        // now we get the code of Foo
+        CtClass c = (CtClass) l.getFactory().Package().getRootPackage().getElements(new NameFilter("Foo")).get(0);
+        
+        // printing the metaprogram
+        System.out.println("// Metaprogram: ");
         System.out.println(c.toString());
 
         // we prepare an interpreter for the transformed code
