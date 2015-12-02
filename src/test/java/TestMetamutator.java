@@ -40,7 +40,7 @@ public class TestMetamutator {
         assertEquals(3,Selector.getAllSelectors().size());
         
         // test with the first
-        Selector sel=Selector.getSelectorByName("_s1");
+        Selector sel=Selector.getSelectorByName(BinaryOperatorMetaMutator.PREFIX + "1");
         
         // the initial version is OR
         assertEquals(true, invokeExactMethod(o, "op", new Object[] {Boolean.TRUE, Boolean.FALSE}));
@@ -62,7 +62,7 @@ public class TestMetamutator {
         catch (IllegalArgumentException expected){}
 
         // test with the second mutation hotspot
-        Selector sel1=Selector.getSelectorByName("_s2");
+        Selector sel1=Selector.getSelectorByName( BinaryOperatorMetaMutator.PREFIX + "2");
         sel1.choose(0);// GT
         assertEquals(false, invokeExactMethod(o, "op2", new Object[] {3, 3}));
         assertEquals(true, invokeExactMethod(o, "op2", new Object[] {5, 4}));
