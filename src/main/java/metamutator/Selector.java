@@ -16,6 +16,8 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.reference.CtGenericElementReference;
+
 import spoon.reflect.reference.CtTypeReference;
 
 /**
@@ -35,7 +37,7 @@ public class Selector<E> {
 	private Selector() {
 	}
 
-	public static Selector of(long hotSpot, String ... variants) {
+	public static <E> Selector of(long hotSpot, E ... variants) {
 		// defensive copy
 		Selector selector = new Selector();
 		selector.hotSpot = hotSpot;
@@ -122,38 +124,43 @@ public class Selector<E> {
 			super(message);
 		}
 	}
-	
-	/** generates a field containing a new selector for this element and adds it to the current class */
-	public static void generateSelector(CtElement element, String initialChoice, int selectorId, EnumSet<?> possibleChoices, String prefix ) {
+	/** Generates a field containing a new selector for this element and adds it to the current class 
+	 * 
+	 */
+	public static <E> void generateSelector(CtElement element, E initialChoice, int selectorId, EnumSet<?> possibleChoices, String prefix ) {
+		
+		Class<?> choiceClass = possibleChoices.iterator().next().getClass();
 		
 		long hashCode = (element.getPosition().toString() + element.getParent()
 		.toString()).hashCode();
+
+		CtTypeReference<Object> fieldType = element.getFactory().Type().createTypeParameterReference(Selector.class.getCanonicalName());
 		
+		//doesn't work with spoon for the moment
+		//CtTypeReference<Object> genericRefs = element.getFactory().Type().createTypeParameterReference(choiceClass.getCanonicalName());
+		//fieldType.addActualTypeArgument(genericRefs);
 		
-		CtTypeReference<Object> fieldType = element.getFactory().Type()
-				.createTypeParameterReference(Selector.class.getName());
 		String selectorFieldName = prefix + selectorId;
 		
 		CtCodeSnippetExpression<Object> codeSnippet = element.getFactory().Core()
 				.createCodeSnippetExpression();
-		
-		StringBuilder sb = new StringBuilder(Selector.class.getName() + ".of(")
+		StringBuilder sb = new StringBuilder(Selector.class.getCanonicalName() + ".of(")
 				.append(selectorId);
 		
 		sb.append(',');
-		
+
 		// now the options
-		sb.append("new String[]{");
+		sb.append("new "+choiceClass.getCanonicalName()+"[]{");
 		
 		// the original operator, always the first one
-		sb.append('"').append(initialChoice).append('"');
+		sb.append(initialChoice.getClass().getCanonicalName()+"."+initialChoice.toString());
 		
 		// the other alternatives
 		for (Object choose : possibleChoices) {
-			if (choose.toString().equals(initialChoice)) {
+			if (choose.equals(initialChoice)) {
 				continue;
 			}
-			sb.append(',').append('"').append(choose).append('"');
+			sb.append(',').append(choose.getClass().getCanonicalName()+"."+choose.toString());
 		}
 		
 		sb.append("})");
