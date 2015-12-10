@@ -6,7 +6,8 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
@@ -17,9 +18,34 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 
-
 public class MutantSearchSpaceExplorator {
 
+	/**
+	 * this function launch a parallel class
+	 * @param classes
+	 * @param core
+	 * @return Core Result or null on blocking
+	 */
+	public static Result runWithThread(Class<?> classes, JUnitCore core) {
+		int i = 0;
+		// Define Runner
+		RunnerThreaded runner = new RunnerThreaded(core,classes);
+		
+		// Launch Class during 8s max 
+		try {
+			runner.start();
+			// check the results every 0,1s during 8s Max
+			while(runner.getResult() == null && i < 80) {
+				Thread.sleep(100);
+				i++;
+			}
+			runner.interrupt();
+		} catch (InterruptedException e) {
+			
+		}
+		return runner.getResult();
+	}
+	
 	public static void runMetaProgramWith(Class<?> TEST_CLASS) throws Exception {
 
 		boolean debug = false;
@@ -46,6 +72,7 @@ public class MutantSearchSpaceExplorator {
 		// selectors = ImmutableList.of(Selector.of(0, "n/a"));
 
 		List<String> successes = Lists.newArrayList();
+		List<String> blocked = Lists.newArrayList();
 		List<String> failures = Lists.newArrayList();
 		Multimap<Integer, String> failures2 = Multimaps.newListMultimap(
 				Maps.newHashMap(), Lists::newArrayList);
@@ -82,9 +109,13 @@ public class MutantSearchSpaceExplorator {
 					System.out.println("Checking options: "
 							+ Arrays.toString(options));
 
-				result = core.run(TEST_CLASS);
+				result = runWithThread(TEST_CLASS,core);
 
-				if (result.wasSuccessful()) {
+				if(result == null ){
+					blocked.add("blocked -> " + TEST_CLASS.getCanonicalName());
+					System.out.println("blocked -> " + TEST_CLASS.getCanonicalName());
+				}
+				else if ( result.wasSuccessful()) {
 					successes.add("   Worked !!!  -> "
 							+ Arrays.toString(options) + " / "
 							+ Arrays.toString(strOptions));
@@ -108,6 +139,7 @@ public class MutantSearchSpaceExplorator {
 
 		System.out.println("killed "+failures.size());
 		System.out.println("alive "+successes.size());
+		System.out.println("blocked  "+blocked.size());
 		// Show result summary
 		// Sets.newHashSet(failures2.keys()).forEach(k -> {
 		// System.out.println(String.format("\n-- Cases with %s", k));
