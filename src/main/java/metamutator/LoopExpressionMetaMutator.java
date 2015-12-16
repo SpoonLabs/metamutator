@@ -18,6 +18,7 @@ public class LoopExpressionMetaMutator
 				extends AbstractProcessor<CtLoop> {
 
 	public static final String PREFIX = "_doExpressionMetaMutator";
+	private static final int procId = 3 ;
 	public enum NbRound {
 		NoRound,
 		Rounds3,
@@ -57,7 +58,7 @@ public class LoopExpressionMetaMutator
 		
 		candidate.insertBefore(DeclareRoundStatement);
 		candidate.getBody().insertAfter(ifRoundStatement);
-		Selector.generateSelector(candidate, NbRound.NoRound, thisIndex, roundsSet, PREFIX);
+		Selector.generateSelector(candidate, NbRound.NoRound, thisIndex, procId, roundsSet, PREFIX);
 	}
 	
 	public String breakOrReturn(CtLoop candidate) {

@@ -24,6 +24,7 @@ public class NumericVariableMetaMutator
 				extends AbstractProcessor<CtVariableRead> {
 
 	public static final String PREFIX = "_numericExpressionMetaMutator";
+	private static final int procId = 4 ;
 	
 	/**
 	 * 
@@ -104,7 +105,7 @@ public class NumericVariableMetaMutator
 		codeSnippet.setValue(expression);
 		candidate.replace(codeSnippet);
 		
-		Selector.generateSelector(candidate, UNARY.INIT, thisIndex, absSet, PREFIX);
+		Selector.generateSelector(candidate, UNARY.INIT, thisIndex, procId, absSet, PREFIX);
 	}
 	
 	/**

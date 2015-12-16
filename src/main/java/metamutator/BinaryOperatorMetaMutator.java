@@ -16,9 +16,8 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.reflect.reference.SpoonClassNotFoundException;
 
 /**
  * inserts a mutation hotspot for each binary operator
@@ -28,6 +27,7 @@ public class BinaryOperatorMetaMutator extends
 
 	public static final String PREFIX =  "_binaryLogicalOperatorHotSpot";
 	private static int index = 0;
+	private static final int procId = 1;
 
 	private static final EnumSet<BinaryOperatorKind> LOGICAL_OPERATORS = EnumSet
 			.of(BinaryOperatorKind.AND, BinaryOperatorKind.OR);
@@ -45,6 +45,7 @@ public class BinaryOperatorMetaMutator extends
 		// if (element.getParent(CtAnonymousExecutable.class)!=null) {
 		// System.out.println(element.getParent(CtAnonymousExecutable.class));
 		// }
+	
 		try {
 			Selector.getTopLevelClass(element);
 		} catch (NullPointerException e) {
@@ -60,7 +61,7 @@ public class BinaryOperatorMetaMutator extends
 		if (element.getParent(CtField.class) != null) {
 			return false;
 		}
-
+		
 		return (LOGICAL_OPERATORS.contains(element.getKind()) || COMPARISON_OPERATORS
 				.contains(element.getKind()))
 				&& (element.getParent(CtAnonymousExecutable.class) == null) // not
@@ -72,12 +73,12 @@ public class BinaryOperatorMetaMutator extends
 
 	public void process(CtBinaryOperator<Boolean> binaryOperator) {
 		BinaryOperatorKind kind = binaryOperator.getKind();
-
+		
 		if (LOGICAL_OPERATORS.contains(kind)) {
 			mutateOperator(binaryOperator, LOGICAL_OPERATORS);
 		} else if (COMPARISON_OPERATORS.contains(kind)) {
-			if (isNumber(binaryOperator.getLeftHandOperand())
-			 || isNumber(binaryOperator.getRightHandOperand()))
+			if ((isNumber(binaryOperator.getLeftHandOperand())
+			 || isNumber(binaryOperator.getRightHandOperand())) && (!binaryOperator.getRightHandOperand().toString().equals("null")))
 			{
 				mutateOperator(binaryOperator, COMPARISON_OPERATORS);
 			}
@@ -88,6 +89,19 @@ public class BinaryOperatorMetaMutator extends
 	}
 
 	private boolean isNumber(CtExpression<?> operand) {
+								
+		try {
+			operand.getType().getActualClass();
+		} catch (Exception e) {
+			return false;
+		}
+				
+		if (operand.getType().toString().equals(CtTypeReference.NULL_TYPE_NAME))
+			return false;
+		
+		if (operand.toString().contains(".class"))
+			return false;
+				
 		return operand.getType().getSimpleName().equals("int")
 			|| operand.getType().getSimpleName().equals("long")
 			|| operand.getType().getSimpleName().equals("byte")
@@ -142,7 +156,7 @@ public class BinaryOperatorMetaMutator extends
 
 		expression.replace(codeSnippet);
 		expression.replace(expression);
-		Selector.generateSelector(expression, originalKind, thisIndex, operators, PREFIX);
+		Selector.generateSelector(expression, originalKind, thisIndex, procId, operators, PREFIX);
 
 		hostSpots.add(expression);
 
