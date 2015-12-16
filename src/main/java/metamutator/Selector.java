@@ -127,7 +127,7 @@ public class Selector<E> {
 	/** Generates a field containing a new selector for this element and adds it to the current class 
 	 * 
 	 */
-	public static <E> void generateSelector(CtElement element, E initialChoice, int selectorId, EnumSet<?> possibleChoices, String prefix ) {
+	public static <E> void generateSelector(CtElement element, E initialChoice, int selectorId, int procId, EnumSet<?> possibleChoices, String prefix ) {
 		
 		Class<?> choiceClass = possibleChoices.iterator().next().getClass();
 		
@@ -145,7 +145,7 @@ public class Selector<E> {
 		CtCodeSnippetExpression<Object> codeSnippet = element.getFactory().Core()
 				.createCodeSnippetExpression();
 		StringBuilder sb = new StringBuilder(Selector.class.getCanonicalName() + ".of(")
-				.append(selectorId);
+				.append(procId+""+selectorId);
 		
 		sb.append(',');
 
@@ -194,5 +194,23 @@ public class Selector<E> {
 			parent = parent.getParent(CtClass.class);
 		}
 		return parent;
+	}
+	
+	public Class getLocationClass(){
+		if(locationClass == null)
+			locationClass = Object.class;
+		return locationClass;
+	}
+	
+	public String getId() {
+		return this.identifier;
+	}
+	
+	public E[] getOption() {
+		return variants;
+	}
+	
+	public static void reset() {
+		selectors.clear();
 	}
 }

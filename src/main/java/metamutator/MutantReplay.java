@@ -6,6 +6,8 @@ import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
@@ -18,8 +20,9 @@ import com.google.common.collect.Multimaps;
 
 import configuration.Config;
 
-public class MutantSearchSpaceExplorator {
-		
+
+public class MutantReplay {
+	
 	static URL url;
 	static URL[] urls;
 	static ClassLoader cl;
@@ -27,33 +30,7 @@ public class MutantSearchSpaceExplorator {
 	static int failures;
 	static int successes;
 	
-	/**
-	 * this function launch a parallel class
-	 * @param classes
-	 * @param core
-	 * @return Core Result or null on blocking
-	 */
-	public static Result runWithThread(Class<?> classes, JUnitCore core) {
-		int i = 0;
-		// Define Runner
-		RunnerThreaded runner = new RunnerThreaded(core,classes);
-		
-		// Launch Class during 8s max 
-		try {
-			runner.start();
-			// check the results every 0,1s during 8s Max
-			while(runner.getResult() == null && i < 80) {
-				Thread.sleep(100);
-				i++;
-			}
-			runner.interrupt();
-		} catch (InterruptedException e) {
-			
-		}
-		return runner.getResult();
-	}
-	
-	public static void runMetaProgramIn(String target, String repertory) throws Exception {
+	public static void replayMetaProgramIn(String target, String repertory) throws Exception {
 		
 		File filep = new File(target);
 		File file = new File(target+"/"+repertory);
@@ -65,6 +42,7 @@ public class MutantSearchSpaceExplorator {
 		if (file.isFile() || filep.isFile())
 			throw new Exception("not a directory");
 		
+		
 		failures = 0;
 		successes = 0;
 		
@@ -75,51 +53,58 @@ public class MutantSearchSpaceExplorator {
 		cl = new URLClassLoader(urls);
 		
 		// finally run program
-		runMetaProgramWith(file, getPackage(repertory));
+		replayMetaProgramWith(file, getPackage(repertory));
 		
 		System.out.println("******************"+file.getName()+"******************");
 		System.out.println("total killed "+failures);
 		System.out.println("total alive "+successes);
 	}
 	
-	public static void runMetaProgramWith(File target, String _package) throws Exception {
-	
-		
+	public static void replayMetaProgramWith(File target, String _package) throws Exception {
 		// if the target is a file, so load the class and apply the initial function
 		if (target.isFile()) {
 			Class<?> clazz = cl.loadClass(_package+"."+target.getName().replace(".class", ""));
 			
-			int[] val = runMetaProgramWith(clazz);
-
+			int[] val = replayMetaProgramWith(clazz);
+			
 			failures += val[0];
 			successes += val[1];
-			
+						
 		}
 		// if the target is a directory, do stuff for each under file
 		else if (target.isDirectory()) {
 			for (File file : target.listFiles()) {
 				if (!_package.isEmpty())
-					runMetaProgramWith(file, _package+"."+target.getName());
+					replayMetaProgramWith(file, _package+"."+target.getName());
 				else
-					runMetaProgramWith(file, target.getName());
+					replayMetaProgramWith(file, target.getName());
 			}
-			
 		}
-
+				
 	}
 
-	public static int[] runMetaProgramWith(Class<?> TEST_CLASS) throws Exception {
+	public static int[] replayMetaProgramWith(Class<?> TEST_CLASS) throws Exception {
 		System.out.println("******************"+TEST_CLASS.getName()+"******************");
+
 		boolean debug = false;
 
 		JUnitCore core = new JUnitCore();
-
+		
 		//output folder
-		File fail = new File("results/fail/"+TEST_CLASS.getName().replace(".", "/"));
+		File fail = new File("results/fail.replay/"+TEST_CLASS.getName().replace(".", "/"));
 		fail.mkdirs();
-		File success = new File("results/success/"+TEST_CLASS.getName().replace(".", "/"));
+		File success = new File("results/success.replay/"+TEST_CLASS.getName().replace(".", "/"));
 		success.mkdirs();
-
+		
+		String path = "results/fail/"+TEST_CLASS.getName().replace(".", "/");
+		File source =new File(path);
+		File[] mutants ;
+		if(source.exists() && source.isDirectory()){
+		mutants= source.listFiles();}
+		else{
+			throw new Exception("The directory fail or success dosen't exist, or is not a directory, please execute MutantSearchSpaceExplorator.runMetaProgramWith(Class<?> TEST_CLASS) first.");
+		}
+		
 		// we first run the test suite once to load all classes and their static
 		// fields
 		// this registers only the executed ifs, so indirectly
@@ -144,56 +129,49 @@ public class MutantSearchSpaceExplorator {
 		// for (int[] options :
 		// permutations(selectors.stream().map(Selector::getOptionCount).collect(Collectors.toList())))
 		// {
-
+		
 		int nattempts=0;
-
-		for (int sel = 0; sel < selectors.size(); sel++) {
-
-			//int k=0;
-			System.out.println(selectors.get(sel).getOptionCount());
-			for (int k = 0; k < selectors.get(sel).getOptionCount(); k++) 
-			{
+				
+		for(int mut = 0; mut < mutants.length;mut++ ){
 				Config conf = Config.getInitInstance();
-
-
+								
+				Map<String,Integer> mapedConf = conf.getConfig(mutants[mut].getPath()).get(selectors.get(0).getLocationClass().getName());
+	
+				Set<String> cles = mapedConf.keySet();
+				
 				int[] options = new int[selectors.size()];
-				// System.out.println(Arrays.toString(options));
-				for (int i = options.length - 1; i >= 0; i--) {
-					selectors.get(i).choose(0);
-					selectors.get(i).setStopTime(
+				int sel = 0;
+				for (String cle : cles) {
+
+					Selector.getSelectorByName(cle).choose(mapedConf.get(cle));
+					Selector.getSelectorByName(cle).setStopTime(
 							System.currentTimeMillis() + 300000);
-					strOptions[i] = selectors.get(i)
+					strOptions[sel] = Selector.getSelectorByName(cle)
 							.getChosenOptionDescription();
-					for(int o = 0; o < selectors.get(i).getOptionCount();o++ ){
-
-						boolean value =(o == 0)?true:false;
-						if(i == sel && o ==k){
-							conf.write(selectors.get(sel).getLocationClass().getName()+":"+selectors.get(sel).getId()+":"+selectors.get(sel).getOption()[k]+":true");
-						}else{
-							if(i == sel)
-								value = false;
+					for(int o = 0; o < Selector.getSelectorByName(cle).getOptionCount();o++ ){
 						
-							conf.write(selectors.get(i).getLocationClass().getName()+":"+selectors.get(i).getId()+":"+selectors.get(i).getOption()[o]+":"+value);
-						}
-
+					boolean value =(o == mapedConf.get(cle))?true:false;
+					
+					conf.write(	Selector.getSelectorByName(cle).getLocationClass().getName()+":"+Selector.getSelectorByName(cle).getId()+":"+Selector.getSelectorByName(cle).getOption()[o]+":"+value);
+					
 					}
+					sel ++;
 				}
-				selectors.get(sel).choose(k);
-
+				
 				if (debug)
 					System.out.println("Checking options: "
 							+ Arrays.toString(options));
 
-				result = runWithThread(TEST_CLASS,core);
+				result = core.run(TEST_CLASS);
 
 				if (result.wasSuccessful()) {
 					successes.add("   Worked !!!  -> "
 							+ Arrays.toString(options) + " / "
 							+ Arrays.toString(strOptions));
-
-					// On essaye avec renameTo
-					File dest = new File(success.getPath()+"/mutant"+selectors.get(sel).getId()+"_Op"+(k+1)+".txt");
-					new File("config.txt").renameTo(dest);
+					
+			                // On essaye avec renameTo
+					File dest = new File(success.getPath()+"/"+mutants[mut].getName());
+			                new File("config.txt").renameTo(dest);
 				} else {
 					String txt = String
 							.format("%s / %s -> It has %s failures out of %s runs in %s ms",
@@ -203,16 +181,16 @@ public class MutantSearchSpaceExplorator {
 									result.getRunCount(), result.getRunTime());
 					String txt_trace = String.format("%s",
 							Arrays.toString(strOptions));
-
+					
 					failures.add(txt);
 					failures2.put(result.getFailureCount(), txt);
 					System.out.println(result.getFailures().get(0).getException());
-					File dest = new File(fail.getPath()+"/mutant"+selectors.get(sel).getId()+"_Op"+(k+1)+".txt");
-					new File("config.txt").renameTo(dest);
+					File dest = new File(fail.getPath()+"/"+mutants[mut].getName());
+	                new File("config.txt").renameTo(dest);
 				}
 			}
 
-		}
+		
 
 		System.out.println("killed "+failures.size());
 		System.out.println("alive "+successes.size());
@@ -222,7 +200,26 @@ public class MutantSearchSpaceExplorator {
 		int[] val = {failures.size(),successes.size()};
 		
 		return val;
-	
+		
+		// Show result summary
+		// Sets.newHashSet(failures2.keys()).forEach(k -> {
+		// System.out.println(String.format("\n-- Cases with %s", k));
+		// Collection<String> texts = failures2.get(k);
+		// if (k <= 2 || texts.size() < 10)
+		// texts.forEach(System.out::println);
+		// else
+		// System.out.println("There are " + texts.size());
+		// });
+
+		// failures.forEach(System.out::println);
+
+		// System.out.println();
+		//
+		// if (successes.isEmpty())
+		// System.out.println("Oops, sorry, we could find a successful option");
+		// else
+		// successes.forEach(System.out::println);
+
 	}
 
 	/**
@@ -269,11 +266,10 @@ public class MutantSearchSpaceExplorator {
 			@Override
 			public void remove() {
 				// TODO Auto-generated method stub
-
+				
 			}
 		};
 	}
-	
 	
 	public static String  getPackage(String path){
 		
@@ -282,4 +278,5 @@ public class MutantSearchSpaceExplorator {
 		
 		return path;
 	}
+	
 }
