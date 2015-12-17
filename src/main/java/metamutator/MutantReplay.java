@@ -273,7 +273,12 @@ public class MutantReplay {
 	
 	public static String  getPackage(String path){
 		
-		path = path.substring(0, path.lastIndexOf("/"));
+
+		int endIndex = path.lastIndexOf("/");
+		if(endIndex == -1)
+			return path;
+			
+		path = path.substring(0, endIndex);
 		path = path.replaceFirst("/", ".");
 		
 		return path;
