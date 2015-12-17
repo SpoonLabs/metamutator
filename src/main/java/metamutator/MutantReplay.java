@@ -279,7 +279,7 @@ public class MutantReplay {
 			return path;
 			
 		path = path.substring(0, endIndex);
-		path = path.replaceFirst("/", ".");
+		path = path.replace("/", ".");
 		
 		return path;
 	}
