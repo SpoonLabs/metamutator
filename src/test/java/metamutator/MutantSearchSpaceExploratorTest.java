@@ -231,6 +231,15 @@ public class MutantSearchSpaceExploratorTest {
 
 	}
 	
+	@Test
+	public void testGetPackage(){
+		
+		assertTrue(MutantSearchSpaceExplorator.getPackage("toto").equals(""));
+		assertTrue(MutantSearchSpaceExplorator.getPackage("toto/titi").equals("toto"));
+		assertTrue(MutantSearchSpaceExplorator.getPackage("toto/titi/tata").equals("toto.titi"));
+		assertTrue(MutantSearchSpaceExplorator.getPackage("toto/titi/tata/tutu").equals("toto.titi.tata"));
+		
+	}
 	
 	 
   
