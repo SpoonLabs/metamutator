@@ -279,7 +279,7 @@ public class MutantSearchSpaceExplorator {
 		
 		int endIndex = path.lastIndexOf("/");
 		if(endIndex == -1)
-			return path;
+			return "";
 			
 		path = path.substring(0, endIndex);
 		path = path.replace("/", ".");
