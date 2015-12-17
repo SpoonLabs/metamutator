@@ -1,3 +1,5 @@
+package resources.foo;
+
 public class Foo {
 	
 	public boolean op(Boolean a, Boolean b) {
@@ -10,5 +12,10 @@ public class Foo {
 
 	public boolean op3(Class c) {
 		return Foo.class==c;
+	}
+	
+	public boolean op4(){
+		String medt = "Theobaldie";
+		return medt != null;
 	}
 }

@@ -8,36 +8,36 @@
 
 
 	<dependencies>
-<dependency>
-	<groupId>junit</groupId>
-	<artifactId>junit</artifactId>
-	<version>4.12</version>
-    </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+		</dependency>
 		<dependency>
 			<groupId>fr.inria.gforge.spoon</groupId>
 			<artifactId>spoon-core</artifactId>
 			<version>4.4.0</version>
 		</dependency>
 
-                <dependency>
-	<groupId>com.google.collections</groupId>
-	<artifactId>google-collections</artifactId>
-	<version>1.0</version>
-</dependency>
-<dependency>
-	<groupId>org.beanshell</groupId>
-	<artifactId>bsh</artifactId>
-	<version>2.0b5</version>
-</dependency>
+		<dependency>
+			<groupId>com.google.collections</groupId>
+			<artifactId>google-collections</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.beanshell</groupId>
+			<artifactId>bsh</artifactId>
+			<version>2.0b5</version>
+		</dependency>
 
-<dependency>
-	<groupId>commons-lang</groupId>
-	<artifactId>commons-lang</artifactId>
-	<version>2.6</version>
-</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
 
 
-            </dependencies>
+	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
@@ -51,19 +51,27 @@
 					<testTarget>1.8</testTarget>
 				</configuration>
 			</plugin>
-                        
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-surefire-plugin</artifactId>
-                            <version>2.16</version>
-                            <configuration>
-<!--                                 the following is required to have the same execution semantics as eclipse (hence all tests passing) -->
-                                <useSystemClassLoader>false</useSystemClassLoader>
-                            </configuration>
-                        </plugin>
-                </plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.16</version>
+				<configuration>
+					<!-- the following is required to have the same execution semantics 
+						as eclipse (hence all tests passing) -->
+					<useSystemClassLoader>false</useSystemClassLoader>
+
+					<excludes>
+						<exclude>resources/footest/FooTest.java</exclude>
+						<exclude>resources/search_replay_test/SearchReplayTestClass.java</exclude>
+						<exclude>resources/search_replay_test/SearchReplayTestClassBis.java</exclude>
+					</excludes>
+
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
-	
+
 </project>
 
 
