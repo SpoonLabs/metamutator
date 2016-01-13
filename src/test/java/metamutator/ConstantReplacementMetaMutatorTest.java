@@ -27,12 +27,12 @@ public class ConstantReplacementMetaMutatorTest {
         // we prepare an interpreter for the transformed code
         Interpreter bsh = new Interpreter();
         // there is no selector before loading the class
-        //assertEquals(0,Selector.getAllSelectors().size());
+        assertEquals(0,Selector.getAllSelectors().size());
         // creating a new instance of the class
         Object o = ((Class)bsh.eval(c.toString())).newInstance();
-        //assertEquals(1,Selector.getAllSelectors().size());
+        assertEquals(1,Selector.getAllSelectors().size());
         
-     // test with the first
+        // test with the first
         Selector sel=Selector.getSelectorByName(ConstantReplacementMetaMutator.PREFIX + "1");
         
         sel.choose(0);//NULL

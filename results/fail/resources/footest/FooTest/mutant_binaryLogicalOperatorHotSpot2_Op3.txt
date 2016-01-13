@@ -1,0 +1,14 @@
+resources.foo.Foo:_binaryLogicalOperatorHotSpot4:NE:true
+resources.foo.Foo:_binaryLogicalOperatorHotSpot4:EQ:false
+resources.foo.Foo:_binaryLogicalOperatorHotSpot3:EQ:true
+resources.foo.Foo:_binaryLogicalOperatorHotSpot3:NE:false
+resources.foo.Foo:_binaryLogicalOperatorHotSpot2:GT:false
+resources.foo.Foo:_binaryLogicalOperatorHotSpot2:EQ:false
+resources.foo.Foo:_binaryLogicalOperatorHotSpot2:NE:true
+resources.foo.Foo:_binaryLogicalOperatorHotSpot2:LT:false
+resources.foo.Foo:_binaryLogicalOperatorHotSpot2:LE:false
+resources.foo.Foo:_binaryLogicalOperatorHotSpot2:GE:false
+resources.foo.Foo:_binaryLogicalOperatorHotSpot1:OR:true
+resources.foo.Foo:_binaryLogicalOperatorHotSpot1:AND:false
+resources.foo.Foo:_variableNullHotSpot1:NO:true
+resources.foo.Foo:_variableNullHotSpot1:YES:false
