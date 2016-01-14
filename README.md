@@ -15,7 +15,10 @@ Mutations can be activated and desactivated one by one at runtime.
 Mutation operators
 ------------------
 
-Logical comparison (switch between ">", ">=", "!=", etc).
+* Logical comparison (switch between ">", ">=", "!=", etc).
+* LoopExpression breaks the loops (no iteration, at 3 iterations, at 100 iterations)
+* NumericVariableMetaMutator adds unary operators to numeric values (absolute value, minus, increment (++), decrement (--))
+* VariabletoNullMetaMutator sets variables to null at their declaration
 
 Usage
 ------
