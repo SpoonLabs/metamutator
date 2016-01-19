@@ -15,10 +15,8 @@ import spoon.reflect.visitor.filter.NameFilter;
 
 public class StatementDeletionMetaMutatorTest {
 	
-	static Object o;
-	
-	@BeforeClass
-	public static void initObject() throws Exception{
+	public Object createStatementResourceObjectTransformed() throws Exception{
+        
         Launcher l = new Launcher();
         l.addInputResource("src/test/java/resources/StatementResource.java");
         l.addProcessor(new StatementDeletionMetaMutator());
@@ -35,11 +33,16 @@ public class StatementDeletionMetaMutatorTest {
         Interpreter bsh = new Interpreter();
 
         // creating a new instance of the class
-        o = ((Class)bsh.eval(c.toString())).newInstance();
+        Object o = ((Class)bsh.eval(c.toString())).newInstance();
+        
+        return o;
+
 	}
+	
 	
     @Test
     public void testSwitchDeletionMetaMutator() throws Exception {  
+    	Object o = createStatementResourceObjectTransformed();
         // test with the first (SWITCH DELETION)
         Selector sel1=Selector.getSelectorByName(StatementDeletionMetaMutator.PREFIX + "1");
         assertEquals('C', invokeExactMethod(o, "returnLetterFromSwitchCase", new Object[] {3}));
@@ -57,6 +60,7 @@ public class StatementDeletionMetaMutatorTest {
 	
     @Test
     public void testIfDeletionMetaMutator() throws Exception {  
+    	Object o = createStatementResourceObjectTransformed();
         //IF DELETION
         Selector sel5=Selector.getSelectorByName(StatementDeletionMetaMutator.PREFIX + "5");
         assertEquals(10, invokeExactMethod(o, "returnMax10", new Object[] {13}));
@@ -72,7 +76,8 @@ public class StatementDeletionMetaMutatorTest {
     }
 	
     @Test
-    public void testDoDeletionMetaMutator() throws Exception {   
+    public void testDoDeletionMetaMutator() throws Exception {  
+    	Object o = createStatementResourceObjectTransformed();
         //DO DELETION
         Selector sel6=Selector.getSelectorByName(StatementDeletionMetaMutator.PREFIX + "6");
         assertEquals(18, invokeExactMethod(o, "returnTotalFromDo", new Object[] {18}));
@@ -88,7 +93,8 @@ public class StatementDeletionMetaMutatorTest {
     }
 	
     @Test
-    public void testForDeletionMetaMutator() throws Exception {
+    public void testForDeletionMetaMutator() throws Exception {  
+    	Object o = createStatementResourceObjectTransformed();
         //FOR DELETION
         Selector sel7=Selector.getSelectorByName(StatementDeletionMetaMutator.PREFIX + "7");
         assertEquals(18, invokeExactMethod(o, "returnTotalFromFor", new Object[] {18}));
@@ -105,8 +111,8 @@ public class StatementDeletionMetaMutatorTest {
     }
 	
     @Test
-    public void testWhileDeletionMetaMutator() throws Exception {
-        //WHILE DELETION
+    public void testWhileDeletionMetaMutator() throws Exception {  
+    	Object o = createStatementResourceObjectTransformed();
         Selector sel8=Selector.getSelectorByName(StatementDeletionMetaMutator.PREFIX + "8");
         assertEquals(18, invokeExactMethod(o, "returnTotalFromWhile", new Object[] {18}));
         sel8.choose(0);
@@ -122,7 +128,8 @@ public class StatementDeletionMetaMutatorTest {
     }
 	
     @Test
-    public void testForEachDeletionMetaMutator() throws Exception {
+    public void testForEachDeletionMetaMutator() throws Exception {  
+    	Object o = createStatementResourceObjectTransformed();
       //FOREACH DELETION
         Selector sel9=Selector.getSelectorByName(StatementDeletionMetaMutator.PREFIX + "9");
         assertEquals(13, invokeExactMethod(o, "returntotalFromForEachFromArray", new Object[] {new int[]{2,5,6}}));
@@ -139,7 +146,8 @@ public class StatementDeletionMetaMutatorTest {
     }
     
     @Test
-    public void testAssignmentInIf() throws Exception {
+    public void testAssignmentInIf() throws Exception {  
+    	Object o = createStatementResourceObjectTransformed();
       //FOREACH DELETION
         Selector sel10=Selector.getSelectorByName(StatementDeletionMetaMutator.PREFIX + "10");
         assertEquals("Bonjour", invokeExactMethod(o, "BonjourOrHello", new Object[] {true}));

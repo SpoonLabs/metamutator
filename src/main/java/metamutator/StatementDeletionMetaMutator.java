@@ -55,7 +55,7 @@ extends AbstractProcessor<CtStatement> {
 
 	public static final String PREFIX =  "_StatementDeletionMutatorHotSpot";
 	private static final int procId = 6;
-	private static int index = 0;
+	private int selectorIndex = 0;
 	
 	public enum ACTIVABLE {
 		// NO CHANGE
@@ -135,7 +135,7 @@ extends AbstractProcessor<CtStatement> {
 									expression));
 			return;
 		}*/
-		int thisIndex = ++index;
+		int thisIndex = ++selectorIndex;
 		
 		ACTIVABLE kind = ACTIVABLE.ENABLED;
 		String expressionContent =  String.format("("+ PREFIX + "%s.is(%s))",
