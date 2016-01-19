@@ -34,7 +34,7 @@ public class ConstantReplacementMetaMutatorTest {
         Object o = ((Class)bsh.eval(c.toString())).newInstance();
         assertEquals(1,Selector.getAllSelectors().size());
         
-     // test with the first
+        // test with the first
         Selector sel=Selector.getSelectorByName(ConstantReplacementMetaMutator.PREFIX + "1");
         
         sel.choose(0);//NULL
