@@ -1,4 +1,4 @@
-package configuration;
+package metamutator;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

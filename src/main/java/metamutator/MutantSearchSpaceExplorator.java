@@ -17,8 +17,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 
-import configuration.Config;
-
 public class MutantSearchSpaceExplorator {
 		
 	static URL url;
