@@ -188,6 +188,17 @@ public class ReplayMutantTest {
 
 	  }
 	 
+	  @Test
+		public void testGetPackage(){
+			
+			assertTrue(MutantReplay.getPackage("toto").equals(""));
+			assertTrue(MutantReplay.getPackage("toto/titi").equals("toto"));
+			assertTrue(MutantReplay.getPackage("toto/titi/tata").equals("toto.titi"));
+			assertTrue(MutantReplay.getPackage("toto/titi/tata/tutu").equals("toto.titi.tata"));
+			
+		}
+		
+	  
 	    @AfterClass
 	    public static void after() throws IOException {
 	    	Selector.reset();
