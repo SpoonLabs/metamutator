@@ -77,9 +77,8 @@ public class VariabletoNullMetaMutator extends
 
 	}
 
-/**
+	/**
 	 *
-	 * com.medallia.codefixer
 	 * @param expression
 	 * @param operators
 	 */

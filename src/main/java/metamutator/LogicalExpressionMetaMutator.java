@@ -118,11 +118,7 @@ public class LogicalExpressionMetaMutator extends
 	 *    || (op(1, 3, ">=") && (a >= b))
 	 *    || (op(1, 4, ">")  && (a > b))
 	 *    )
-	 *
-	 * com.medallia.codefixer
-	 * @param expression
-	 * @param operators
-	 */
+	 *	 */
 	private void mutateOperator(final CtBinaryOperator<Boolean> expression, EnumSet<BinaryOperatorKind> operators) {
 		
 		if (!operators.contains(expression.getKind())) {
