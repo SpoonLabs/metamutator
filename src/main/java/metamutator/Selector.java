@@ -32,12 +32,11 @@ public class Selector<E> {
 	private Class locationClass;
 	private E[] variants;
 	private int chosenVariant = 0; 
-	private long stopTime;
 
 	private Selector() {
 	}
 
-	public static <E> Selector of(long hotSpot, E ... variants) {
+	public static Selector of(long hotSpot, Object ... variants) {
 		// defensive copy
 		Selector selector = new Selector();
 		selector.hotSpot = hotSpot;
@@ -99,10 +98,6 @@ public class Selector<E> {
 		return variants.length;
 	}
 
-	public void setStopTime(long stopTime) {
-
-		this.stopTime = stopTime;
-	}
 
 	public String getIdentifier() {
 		return "id:"+hotSpot+",h:"+locationHashCode;

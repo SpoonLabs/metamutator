@@ -144,8 +144,6 @@ public class MutantReplay {
 				for (String cle : cles) {
 
 					Selector.getSelectorByName(cle).choose(mapedConf.get(cle));
-					Selector.getSelectorByName(cle).setStopTime(
-							System.currentTimeMillis() + 300000);
 					strOptions[sel] = Selector.getSelectorByName(cle)
 							.getChosenOptionDescription();
 					for(int o = 0; o < Selector.getSelectorByName(cle).getOptionCount();o++ ){
