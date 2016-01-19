@@ -8,7 +8,9 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.ModifierKind;
 
-public class ConstantReplacementMetaMutator extends AbstractProcessor<CtVariableRead<?>> {
+/** replaces integer constants by 0, INT_MAX, 
+ */
+public class IntegerConstantReplacementMetaMutator extends AbstractProcessor<CtVariableRead<?>> {
 
 	public static final String PREFIX = "_constantOperatorMetaMutator";
 	private static final int procId = 5;
@@ -16,14 +18,15 @@ public class ConstantReplacementMetaMutator extends AbstractProcessor<CtVariable
 	public enum CONSTANT_REP {
 		ZERO,
 		INT_MAX,
-		MIN_MIN
+		INT_MIN
 	};
 	
 	private static int thisIndex = 0;
 	
 	private static final EnumSet<CONSTANT_REP> consRep = EnumSet.
-			of(CONSTANT_REP.ZERO, CONSTANT_REP.INT_MAX, CONSTANT_REP.MIN_MIN);
+			of(CONSTANT_REP.ZERO, CONSTANT_REP.INT_MAX, CONSTANT_REP.INT_MIN);
 	
+	@Override
 	public boolean isToBeProcessed(CtVariableRead element){
 		try {
 			if((element.getType().toString().contains("int"))&&
@@ -42,7 +45,7 @@ public class ConstantReplacementMetaMutator extends AbstractProcessor<CtVariable
 		switch(value) {
 		case ZERO : return "0";
 		case INT_MAX : return Integer.toString(Integer.MAX_VALUE - 1);
-		case MIN_MIN : return Integer.toString(Integer.MIN_VALUE + 1);
+		case INT_MIN : return Integer.toString(Integer.MIN_VALUE + 1);
 		default : return "";}
 		}
 	

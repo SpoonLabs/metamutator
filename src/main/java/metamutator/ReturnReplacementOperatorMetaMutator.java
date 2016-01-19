@@ -12,6 +12,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 
+/** metamutates return statements that returns Boolean */
 public class ReturnReplacementOperatorMetaMutator extends AbstractProcessor<CtReturn> {
 
 	public static final String PREFIX = "_returnReplacementOperatorHotSpot";

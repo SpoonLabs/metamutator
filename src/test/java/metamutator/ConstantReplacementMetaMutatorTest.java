@@ -17,7 +17,7 @@ public class ConstantReplacementMetaMutatorTest {
 		
 		Launcher l = new Launcher();
         l.addInputResource("src/test/java/resources/Bar.java");
-        l.addProcessor(new ConstantReplacementMetaMutator());
+        l.addProcessor(new IntegerConstantReplacementMetaMutator());
         l.run();
         // now we get the code of Foo
         CtClass c = (CtClass) l.getFactory().Package().getRootPackage().getElements(new NameFilter("Bar")).get(0);
@@ -35,7 +35,7 @@ public class ConstantReplacementMetaMutatorTest {
         assertEquals(1,Selector.getAllSelectors().size());
         
         // test with the first
-        Selector sel=Selector.getSelectorByName(ConstantReplacementMetaMutator.PREFIX + "1");
+        Selector sel=Selector.getSelectorByName(IntegerConstantReplacementMetaMutator.PREFIX + "1");
         
         sel.choose(0);//NULL
         assertEquals(0, invokeExactMethod(o, "op_constant", new Object[] {}));
