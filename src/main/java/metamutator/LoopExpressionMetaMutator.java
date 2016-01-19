@@ -58,7 +58,7 @@ public class LoopExpressionMetaMutator
 		
 		candidate.insertBefore(DeclareRoundStatement);
 		candidate.getBody().insertAfter(ifRoundStatement);
-		Selector.generateSelector(candidate, NbRound.NoRound, thisIndex, procId, roundsSet, PREFIX);
+		Selector.generateSelector(candidate, NbRound.NoRound, thisIndex, roundsSet, PREFIX);
 	}
 	
 	public String breakOrReturn(CtLoop candidate) {

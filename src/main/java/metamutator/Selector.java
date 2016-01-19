@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
@@ -17,18 +18,16 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtGenericElementReference;
-
 import spoon.reflect.reference.CtTypeReference;
 
 /**
  * A selector selects one of the variants for a given hot spot
  */
 public class Selector<E> {
-	private static final Map<Long, Selector> selectors = new HashMap<Long, Selector>();
+	private static final Map<String, Selector> selectors = new HashMap<String, Selector>();
 
-	private long hotSpot;
 	private long locationHashCode;
-	private String identifier;
+	private String _identifier;
 	private Class locationClass;
 	private E[] variants;
 	private int chosenVariant = 0; 
@@ -36,16 +35,16 @@ public class Selector<E> {
 	private Selector() {
 	}
 
-	public static Selector of(long hotSpot, Object ... variants) {
+	public static Selector of(Object ... variants) {
 		// defensive copy
 		Selector selector = new Selector();
-		selector.hotSpot = hotSpot;
 		
 		// defensive copy
 		selector.variants = variants.clone();
 		//selector.locationHashCode = locationHashCode;
 
-		selectors.put(hotSpot, selector);
+		selector._identifier=UUID.randomUUID().toString();
+		selectors.put(selector._identifier, selector);
 
 		return selector;
 	}
@@ -56,7 +55,9 @@ public class Selector<E> {
 	}
 	
 	public Selector id(String identifier) {
-		this.identifier= identifier;
+		selectors.remove(this._identifier);		
+		this._identifier= identifier;
+		selectors.put(identifier, this);
 		return this;
 	}
 
@@ -76,7 +77,6 @@ public class Selector<E> {
 
 	@Override public String toString() {
 		return "chosenVariant " +  chosenVariant +"\n"
-			+"hotSpot "+ hotSpot+"\n"
 			+"variants "+ variants+"\n"
 			;
 	}
@@ -87,7 +87,7 @@ public class Selector<E> {
 
 	public static Selector getSelectorByName(String name) {
 		for (Selector s : selectors.values()) {
-			if (name.equals(s.identifier)) {
+			if (name.equals(s._identifier)) {
 				return s;
 		}
 		}
@@ -100,7 +100,7 @@ public class Selector<E> {
 
 
 	public String getIdentifier() {
-		return "id:"+hotSpot+",h:"+locationHashCode;
+		return "id:"+_identifier+",h:"+locationHashCode;
 	}
 
 	public String getChosenOptionDescription() {
@@ -122,7 +122,7 @@ public class Selector<E> {
 	/** Generates a field containing a new selector for this element and adds it to the current class 
 	 * 
 	 */
-	public static <E> void generateSelector(CtElement element, E initialChoice, int selectorId, int procId, EnumSet<?> possibleChoices, String prefix ) {
+	public static <E> void generateSelector(CtElement element, E initialChoice, int selectorId, EnumSet<?> possibleChoices, String prefix ) {
 		
 		Class<?> choiceClass = possibleChoices.iterator().next().getClass();
 		
@@ -139,10 +139,11 @@ public class Selector<E> {
 		
 		CtCodeSnippetExpression<Object> codeSnippet = element.getFactory().Core()
 				.createCodeSnippetExpression();
-		StringBuilder sb = new StringBuilder(Selector.class.getCanonicalName() + ".of(")
-				.append(procId+""+selectorId);
+		StringBuilder sb = new StringBuilder(Selector.class.getCanonicalName() + ".of(");
 		
-		sb.append(',');
+		// we disable the ids
+		// sb.append(procId+""+selectorId);
+		// sb.append(',');
 
 		// now the options
 		sb.append("new "+choiceClass.getCanonicalName()+"[]{");
@@ -198,7 +199,7 @@ public class Selector<E> {
 	}
 	
 	public String getId() {
-		return this.identifier;
+		return this._identifier;
 	}
 	
 	public E[] getOption() {

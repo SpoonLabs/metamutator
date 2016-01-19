@@ -106,7 +106,7 @@ public class VariabletoNullMetaMutator extends
 		expression.replace(codeSnippet);
 		expression.replace(expression);
 		
-		Selector.generateSelector(expression, Null.NO, thisIndex, procId, operators, PREFIX);
+		Selector.generateSelector(expression, Null.NO, thisIndex, operators, PREFIX);
 
 		hostSpots.add(expression);
 

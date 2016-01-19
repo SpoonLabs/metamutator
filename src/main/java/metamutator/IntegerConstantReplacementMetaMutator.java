@@ -69,7 +69,7 @@ public class IntegerConstantReplacementMetaMutator extends AbstractProcessor<CtV
 			
 			try {
 				valToChange.replace(codeSnippet);
-				Selector.generateSelector(element, CONSTANT_REP.ZERO, thisIndex, procId, consRep, PREFIX);
+				Selector.generateSelector(element, CONSTANT_REP.ZERO, thisIndex, consRep, PREFIX);
 
 			} catch (Exception e) {
 				System.err.println("Element not changed");

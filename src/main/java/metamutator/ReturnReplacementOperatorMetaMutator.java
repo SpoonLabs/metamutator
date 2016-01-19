@@ -97,7 +97,7 @@ public class ReturnReplacementOperatorMetaMutator extends AbstractProcessor<CtRe
 				CtReturn newReturn = getFactory().Core().createReturn();
 				newReturn.setReturnedExpression(codeSnippet);
 				returnStatement.replace(newReturn);
-				Selector.generateSelector(returnStatement, RETURN_REPLACEMENT_INT.INIT, index ,procId ,int_replacement, PREFIX);
+				Selector.generateSelector(returnStatement, RETURN_REPLACEMENT_INT.INIT, index ,int_replacement ,PREFIX);
 				
 				hostSpots.add(returnStatement);
 				
@@ -112,7 +112,7 @@ public class ReturnReplacementOperatorMetaMutator extends AbstractProcessor<CtRe
 				CtReturn newReturn = getFactory().Core().createReturn();
 				newReturn.setReturnedExpression(codeSnippet);
 				returnStatement.replace(newReturn);
-				Selector.generateSelector(returnStatement, RETURN_REPLACEMENT_OBJECT.INIT, index ,procId ,object_replacement, PREFIX);
+				Selector.generateSelector(returnStatement, RETURN_REPLACEMENT_OBJECT.INIT, index ,object_replacement ,PREFIX);
 				hostSpots.add(returnStatement);
 			}
 		}

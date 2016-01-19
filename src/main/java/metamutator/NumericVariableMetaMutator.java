@@ -105,7 +105,7 @@ public class NumericVariableMetaMutator
 		codeSnippet.setValue(expression);
 		candidate.replace(codeSnippet);
 		
-		Selector.generateSelector(candidate, UNARY.INIT, thisIndex, procId, absSet, PREFIX);
+		Selector.generateSelector(candidate, UNARY.INIT, thisIndex, absSet, PREFIX);
 	}
 	
 	/**
