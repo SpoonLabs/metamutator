@@ -30,7 +30,7 @@ Let's assume your project is called `foo` and contains two folders `src/main/jav
 
 1) Create the metaprogram
 
-    java -jar spoon.jar -i src/main/java -p metamutator.BinaryOperatorMetaMutator -o spooned
+    java -jar spoon.jar -i src/main/java -p metamutator.LogicalExpressionMetaMutator -o spooned
     
 2) Compile the metaprogram
 
