@@ -3,13 +3,14 @@ package metamutator;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -27,6 +28,7 @@ public class MutantSearchSpaceExplorator {
 	static int failures;
 	static int successes;
 	
+	static final long maxMutants = System.getProperty("MutantSearchSpaceExplorator.maxMutants")!=null?Long.parseLong(System.getProperty("MutantSearchSpaceExplorator.maxMutants")):Long.MAX_VALUE;
 	/**
 	 * this function launch a parallel class
 	 * @param classes
@@ -50,6 +52,21 @@ public class MutantSearchSpaceExplorator {
 		} catch (InterruptedException e) {
 			
 		}
+		if (runner.getResult()==null) {
+			Result r = new Result() {
+				@Override
+				public int getFailureCount() {return 1;}
+				
+				@Override
+				public java.util.List<org.junit.runner.notification.Failure> getFailures() {
+					List<Failure> l = new ArrayList<Failure>();
+					l.add(new Failure(null, new RuntimeException("interrupted")));
+					return l;
+				}
+			};
+			return r;
+		}
+		
 		return runner.getResult();
 	}
 	
@@ -108,12 +125,17 @@ public class MutantSearchSpaceExplorator {
 
 	}
 
+	static void resetAllSelectors() {
+		List<Selector> selectors = Selector.getAllSelectors();
+		for (int sel = 0; sel < selectors.size(); sel++) {
+			selectors.get(sel).choose(0);
+		}
+	}
 	public static int[] runMetaProgramWith(Class<?> TEST_CLASS) throws Exception {
 		System.out.println("******************"+TEST_CLASS.getName()+"******************");
 		boolean debug = false;
 
 		JUnitCore core = new JUnitCore();
-
 		//output folder
 		File fail = new File("results/fail/"+TEST_CLASS.getName().replace(".", "/"));
 		fail.mkdirs();
@@ -124,9 +146,8 @@ public class MutantSearchSpaceExplorator {
 		// fields
 		// this registers only the executed ifs, so indirectly
 		// it collects a kind of trace
-		Result result = core.run(TEST_CLASS);
-
-		if (debug) { core.addListener(new TextListener(System.out)); }
+		
+		checkThatAllTestsPass(TEST_CLASS);
 
 		List<Selector> selectors = Selector.getAllSelectors();
 
@@ -149,26 +170,37 @@ public class MutantSearchSpaceExplorator {
 
 		for (int sel = 0; sel < selectors.size(); sel++) {
 
+			
+			if (nattempts++>maxMutants) break;
+			
 			//int k=0;
-			System.out.println(selectors.get(sel).getOptionCount());
-			for (int k = 0; k < selectors.get(sel).getOptionCount(); k++) 
+			Selector currentSelector = selectors.get(sel);
+			System.out.println(currentSelector.getOptionCount());
+			
+			// k should always start at one otherwise we explore the original code as well
+			for (int k = 1; k < currentSelector.getOptionCount(); k++) 
 			{
 				Config conf = Config.getInitInstance();
 
 
 				int[] options = new int[selectors.size()];
 				// System.out.println(Arrays.toString(options));
+				
+				// resetting all selectors to 0
+				resetAllSelectors();
+				
+				checkThatAllTestsPass(TEST_CLASS);
+
+				// checking that the test is running again
+				
+				
 				for (int i = options.length - 1; i >= 0; i--) {
-					selectors.get(i).choose(0);
-					selectors.get(i).setStopTime(
-							System.currentTimeMillis() + 300000);
-					strOptions[i] = selectors.get(i)
-							.getChosenOptionDescription();
+					// saving the info
 					for(int o = 0; o < selectors.get(i).getOptionCount();o++ ){
 
 						boolean value =(o == 0)?true:false;
 						if(i == sel && o ==k){
-							conf.write(selectors.get(sel).getLocationClass().getName()+":"+selectors.get(sel).getId()+":"+selectors.get(sel).getOption()[k]+":true");
+							conf.write(currentSelector.getLocationClass().getName()+":"+currentSelector.getId()+":"+currentSelector.getOption()[k]+":true");
 						}else{
 							if(i == sel)
 								value = false;
@@ -178,40 +210,49 @@ public class MutantSearchSpaceExplorator {
 
 					}
 				}
-				selectors.get(sel).choose(k);
+				currentSelector.choose(k);
 
 				if (debug)
 					System.out.println("Checking options: "
 							+ Arrays.toString(options));
+				
+				Result result;
 
 				result = runWithThread(TEST_CLASS,core);
 
+				// result is null if interrupted
 				if (result.wasSuccessful()) {
 					successes.add("   Worked !!!  -> "
 							+ Arrays.toString(options) + " / "
 							+ Arrays.toString(strOptions));
 
 					// On essaye avec renameTo
-					File dest = new File(success.getPath()+"/mutant"+selectors.get(sel).getId()+"_Op"+(k+1)+".txt");
+					File dest = new File(success.getPath()+"/mutant"+currentSelector.getId()+"_Op"+(k+1)+".txt");
 					new File("config.txt").renameTo(dest);
 				} else {
-					String txt = String
-							.format("%s / %s -> It has %s failures out of %s runs in %s ms",
-									Arrays.toString(options),
-									Arrays.toString(strOptions),
-									result.getFailureCount(),
-									result.getRunCount(), result.getRunTime());
+					String txt;
+//					txt = String
+//							.format("%s / %s -> It has %s failures out of %s runs in %s ms",
+//									Arrays.toString(options),
+//									Arrays.toString(strOptions),
+//									result.getFailureCount(),
+//									result.getRunCount(), result.getRunTime());
+					txt = sel+ "_"+k+" "+result.getFailures().get(0).getMessage();
 					String txt_trace = String.format("%s",
 							Arrays.toString(strOptions));
 
 					failures.add(txt);
 					failures2.put(result.getFailureCount(), txt);
 					System.out.println(result.getFailures().get(0).getException());
-					File dest = new File(fail.getPath()+"/mutant"+selectors.get(sel).getId()+"_Op"+(k+1)+".txt");
+					File dest = new File(fail.getPath()+"/mutant"+currentSelector.getId()+"_Op"+(k+1)+".txt");
 					new File("config.txt").renameTo(dest);
 				}
 			}
 
+		}
+		
+		for (String s : failures ) {
+			System.out.println(s);
 		}
 
 		System.out.println("killed "+failures.size());
@@ -223,6 +264,16 @@ public class MutantSearchSpaceExplorator {
 		
 		return val;
 	
+	}
+
+	private static void checkThatAllTestsPass(Class<?> TEST_CLASS) {
+		resetAllSelectors();
+		JUnitCore core = new JUnitCore();
+		Result result = core.run(TEST_CLASS);
+		if (result.getFailureCount()>0) {
+			// oops the tests are not valid before
+			throw new RuntimeException("oops it does not pass anymore", result.getFailures().get(0).getException());
+		}
 	}
 
 	/**
