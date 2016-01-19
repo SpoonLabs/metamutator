@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 import java.util.List;
 
-import metamutator.BinaryOperatorMetaMutator;
+import metamutator.LogicalExpressionMetaMutator;
 import metamutator.Selector;
 import metamutator.NumericVariableMetaMutator;
 

@@ -25,7 +25,7 @@ import spoon.support.reflect.reference.SpoonClassNotFoundException;
 /**
  * inserts a mutation hotspot for each binary operator
  */
-public class BinaryOperatorMetaMutator extends
+public class LogicalExpressionMetaMutator extends
 		AbstractProcessor<CtBinaryOperator<Boolean>> {
 
 	public static final String PREFIX =  "_binaryLogicalOperatorHotSpot";

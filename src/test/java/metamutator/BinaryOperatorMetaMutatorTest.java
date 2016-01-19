@@ -2,7 +2,7 @@ package metamutator;
 import static org.apache.commons.lang.reflect.MethodUtils.invokeExactMethod;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import metamutator.BinaryOperatorMetaMutator;
+import metamutator.LogicalExpressionMetaMutator;
 import metamutator.Selector;
 
 import org.junit.Test;
@@ -20,7 +20,7 @@ public class BinaryOperatorMetaMutatorTest {
         // build the model and apply the transformation
         Launcher l = new Launcher();
         l.addInputResource("src/test/java");
-        l.addProcessor(new BinaryOperatorMetaMutator());
+        l.addProcessor(new LogicalExpressionMetaMutator());
         l.run();
 
         // now we get the code of Foo
@@ -41,7 +41,7 @@ public class BinaryOperatorMetaMutatorTest {
         assertEquals(true,Selector.getAllSelectors().size() > 3);
         
         // test with the first
-        Selector sel=Selector.getSelectorByName(BinaryOperatorMetaMutator.PREFIX + 2);
+        Selector sel=Selector.getSelectorByName(LogicalExpressionMetaMutator.PREFIX + 2);
         
         // the initial version is OR
         assertEquals(true, invokeExactMethod(o, "op", new Object[] {Boolean.TRUE, Boolean.FALSE}));
@@ -63,7 +63,7 @@ public class BinaryOperatorMetaMutatorTest {
         catch (IllegalArgumentException expected){}
 
         // test with the second mutation hotspot
-        Selector sel1=Selector.getSelectorByName( BinaryOperatorMetaMutator.PREFIX + "3");
+        Selector sel1=Selector.getSelectorByName( LogicalExpressionMetaMutator.PREFIX + "3");
         sel1.choose(0);// GT
         assertEquals(false, invokeExactMethod(o, "op2", new Object[] {3, 3}));
         assertEquals(true, invokeExactMethod(o, "op2", new Object[] {5, 4}));
