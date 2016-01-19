@@ -57,6 +57,9 @@ public class Selector<E> {
 	public Selector id(String identifier) {
 		selectors.remove(this._identifier);		
 		this._identifier= identifier;
+		if (selectors.get(identifier)!=null) {
+			throw new IllegalArgumentException("identifier already used");
+		}
 		selectors.put(identifier, this);
 		return this;
 	}

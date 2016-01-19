@@ -16,7 +16,8 @@ import spoon.reflect.visitor.filter.NameFilter;
 public class StatementDeletionMetaMutatorTest {
 	
 	public Object createStatementResourceObjectTransformed() throws Exception{
-        
+    	Selector.reset();
+
         Launcher l = new Launcher();
         l.addInputResource("src/test/java/resources/StatementResource.java");
         l.addProcessor(new StatementDeletionMetaMutator());
@@ -111,7 +112,7 @@ public class StatementDeletionMetaMutatorTest {
     }
 	
     @Test
-    public void testWhileDeletionMetaMutator() throws Exception {  
+    public void testWhileDeletionMetaMutator() throws Exception {
     	Object o = createStatementResourceObjectTransformed();
         Selector sel8=Selector.getSelectorByName(StatementDeletionMetaMutator.PREFIX + "8");
         assertEquals(18, invokeExactMethod(o, "returnTotalFromWhile", new Object[] {18}));
