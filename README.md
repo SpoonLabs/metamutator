@@ -45,3 +45,5 @@ Credits
 -------
 
 Based on awesome code by Carlos Fau and Alejandro Russel (<https://github.com/totemcaf/code-fixer/>)
+
+Great contributions from University of Lille's students enrolled in IAGL 2015-2016.
