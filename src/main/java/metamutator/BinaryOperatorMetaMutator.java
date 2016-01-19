@@ -16,6 +16,9 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.ClassFactory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.reference.SpoonClassNotFoundException;
 
@@ -77,25 +80,21 @@ public class BinaryOperatorMetaMutator extends
 		if (LOGICAL_OPERATORS.contains(kind)) {
 			mutateOperator(binaryOperator, LOGICAL_OPERATORS);
 		} else if (COMPARISON_OPERATORS.contains(kind)) {
-			if ((isNumber(binaryOperator.getLeftHandOperand())
-			 || isNumber(binaryOperator.getRightHandOperand())) && (!binaryOperator.getRightHandOperand().toString().equals("null")))
+			if (isNumber(binaryOperator.getLeftHandOperand())
+			 && isNumber(binaryOperator.getRightHandOperand()))
 			{
 				mutateOperator(binaryOperator, COMPARISON_OPERATORS);
 			}
 			 else {
-			 mutateOperator(binaryOperator, REDUCED_COMPARISON_OPERATORS);
+				 EnumSet<BinaryOperatorKind> clone = REDUCED_COMPARISON_OPERATORS.clone();
+				 clone.add(kind);
+				 mutateOperator(binaryOperator, clone);
 			 }
 		}
 	}
 
 	private boolean isNumber(CtExpression<?> operand) {
-								
-		try {
-			operand.getType().getActualClass();
-		} catch (Exception e) {
-			return false;
-		}
-				
+	
 		if (operand.getType().toString().equals(CtTypeReference.NULL_TYPE_NAME))
 			return false;
 		
@@ -108,7 +107,7 @@ public class BinaryOperatorMetaMutator extends
 			|| operand.getType().getSimpleName().equals("char")
 		|| operand.getType().getSimpleName().equals("float")
 		|| operand.getType().getSimpleName().equals("double")
-		|| Number.class.isAssignableFrom(operand.getType().getActualClass());
+		|| getFactory().Type().createReference(Number.class).isAssignableFrom(operand.getType());
 	}
 
 /**
@@ -127,7 +126,7 @@ public class BinaryOperatorMetaMutator extends
 	private void mutateOperator(final CtBinaryOperator<Boolean> expression, EnumSet<BinaryOperatorKind> operators) {
 		
 		if (!operators.contains(expression.getKind())) {
-			throw new IllegalArgumentException("not consistent");
+			throw new IllegalArgumentException("not consistent ");
 		}
 
 		if (alreadyInHotsSpot(expression)
