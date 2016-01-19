@@ -12,6 +12,8 @@ public class ConstantReplacementMetaMutatorTest {
 
 	@Test
 	public void testConstantReplacementMetaMutator() throws Exception{
+		//clean selector
+		Selector.reset();
 		
 		Launcher l = new Launcher();
         l.addInputResource("src/test/java/resources/Bar.java");
