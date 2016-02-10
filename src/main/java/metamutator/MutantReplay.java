@@ -143,12 +143,12 @@ public class MutantReplay {
 
 					Selector.getSelectorByName(cle).choose(mapedConf.get(cle));
 					strOptions[sel] = Selector.getSelectorByName(cle)
-							.getChosenOptionDescription();
-					for(int o = 0; o < Selector.getSelectorByName(cle).getOptionCount();o++ ){
+							.getChosenAlternativeDescription();
+					for(int o = 0; o < Selector.getSelectorByName(cle).getAlternativeCount();o++ ){
 						
 					boolean value =(o == mapedConf.get(cle))?true:false;
 					
-					conf.write(	Selector.getSelectorByName(cle).getLocationClass().getName()+":"+Selector.getSelectorByName(cle).getId()+":"+Selector.getSelectorByName(cle).getOption()[o]+":"+value);
+					conf.write(	Selector.getSelectorByName(cle).getLocationClass().getName()+":"+Selector.getSelectorByName(cle).getIdentifier()+":"+Selector.getSelectorByName(cle).getAlternatives()[o]+":"+value);
 					
 					}
 					sel ++;

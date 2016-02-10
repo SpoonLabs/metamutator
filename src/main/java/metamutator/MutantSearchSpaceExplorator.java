@@ -173,10 +173,10 @@ public class MutantSearchSpaceExplorator {
 			
 			//int k=0;
 			Selector currentSelector = selectors.get(sel);
-			System.out.println(currentSelector.getOptionCount());
+			System.out.println(currentSelector.getAlternativeCount());
 			
 			// k should always start at one otherwise we explore the original code as well
-			for (int k = 1; k < currentSelector.getOptionCount(); k++) 
+			for (int k = 1; k < currentSelector.getAlternativeCount(); k++) 
 			{
 				Config conf = Config.getInitInstance();
 
@@ -194,16 +194,16 @@ public class MutantSearchSpaceExplorator {
 				
 				for (int i = options.length - 1; i >= 0; i--) {
 					// saving the info
-					for(int o = 0; o < selectors.get(i).getOptionCount();o++ ){
+					for(int o = 0; o < selectors.get(i).getAlternativeCount();o++ ){
 
 						boolean value =(o == 0)?true:false;
 						if(i == sel && o ==k){
-							conf.write(currentSelector.getLocationClass().getName()+":"+currentSelector.getId()+":"+currentSelector.getOption()[k]+":true");
+							conf.write(currentSelector.getLocationClass().getName()+":"+currentSelector.getIdentifier()+":"+currentSelector.getAlternatives()[k]+":true");
 						}else{
 							if(i == sel)
 								value = false;
 						
-							conf.write(selectors.get(i).getLocationClass().getName()+":"+selectors.get(i).getId()+":"+selectors.get(i).getOption()[o]+":"+value);
+							conf.write(selectors.get(i).getLocationClass().getName()+":"+selectors.get(i).getIdentifier()+":"+selectors.get(i).getAlternatives()[o]+":"+value);
 						}
 
 					}
@@ -225,7 +225,7 @@ public class MutantSearchSpaceExplorator {
 							+ Arrays.toString(strOptions));
 
 					// On essaye avec renameTo
-					File dest = new File(success.getPath()+"/mutant"+currentSelector.getId()+"_Op"+(k+1)+".txt");
+					File dest = new File(success.getPath()+"/mutant"+currentSelector.getIdentifier()+"_Op"+(k+1)+".txt");
 					new File("config.txt").renameTo(dest);
 				} else {
 					String txt;
@@ -242,7 +242,7 @@ public class MutantSearchSpaceExplorator {
 					failures.add(txt);
 					failures2.put(result.getFailureCount(), txt);
 					System.out.println(result.getFailures().get(0).getException());
-					File dest = new File(fail.getPath()+"/mutant"+currentSelector.getId()+"_Op"+(k+1)+".txt");
+					File dest = new File(fail.getPath()+"/mutant"+currentSelector.getIdentifier()+"_Op"+(k+1)+".txt");
 					new File("config.txt").renameTo(dest);
 				}
 			}

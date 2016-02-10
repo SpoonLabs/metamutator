@@ -23,7 +23,7 @@ import spoon.reflect.reference.CtTypeReference;
 /**
  * A selector selects one of the variants for a given hot spot
  */
-public class Selector<E> {
+public class Selector<E> implements ISelector<E> {
 	private static final Map<String, Selector> selectors = new HashMap<String, Selector>();
 
 	private long locationHashCode;
@@ -49,11 +49,13 @@ public class Selector<E> {
 		return selector;
 	}
 
+	@Override
 	public Selector in(Class locationClass) {
 		this.locationClass= locationClass;
 		return this;
 	}
 	
+	@Override
 	public Selector id(String identifier) {
 		selectors.remove(this._identifier);		
 		this._identifier= identifier;
@@ -64,6 +66,7 @@ public class Selector<E> {
 		return this;
 	}
 
+	@Override
 	public void choose(int option) {
 		if (option<0 || option>=variants.length) {
 			throw new IllegalArgumentException();
@@ -71,6 +74,7 @@ public class Selector<E> {
 		chosenVariant = option;
 	}
 
+	@Override
 	public boolean is(E variant) {
 //		if (System.currentTimeMillis() > stopTime)
 //			throw new StopTimeExceededError("In selector " + hotSpot + " with option " + chosenVariant + " checking for " + variant);
@@ -97,16 +101,19 @@ public class Selector<E> {
 		throw new NoSuchElementException("no such selector");
 	}
 	
-	public int getOptionCount() {
+	@Override
+	public int getAlternativeCount() {
 		return variants.length;
 	}
 
 
+	@Override
 	public String getIdentifier() {
-		return "id:"+_identifier+",h:"+locationHashCode;
+		return _identifier;
 	}
 
-	public String getChosenOptionDescription() {
+	@Override
+	public String getChosenAlternativeDescription() {
 
 		return getIdentifier()+",v:"+variants[chosenVariant];
 //		if ((chosenVariant >= 0) && (chosenVariant < variants.length)) {
@@ -132,7 +139,7 @@ public class Selector<E> {
 		long hashCode = (element.getPosition().toString() + element.getParent()
 		.toString()).hashCode();
 
-		CtTypeReference<Object> fieldType = element.getFactory().Type().createTypeParameterReference(Selector.class.getCanonicalName());
+		CtTypeReference<Object> fieldType = element.getFactory().Type().createTypeParameterReference(ISelector.class.getCanonicalName());
 		
 		//doesn't work with spoon for the moment
 		//CtTypeReference<Object> genericRefs = element.getFactory().Type().createTypeParameterReference(choiceClass.getCanonicalName());
@@ -195,18 +202,17 @@ public class Selector<E> {
 		return parent;
 	}
 	
+	@Override
 	public Class getLocationClass(){
 		if(locationClass == null)
 			locationClass = Object.class;
 		return locationClass;
 	}
-	
-	public String getId() {
-		return this._identifier;
-	}
-	
-	public E[] getOption() {
-		return variants;
+		
+	@Override
+	public E[] getAlternatives() {
+		// defensive copy
+		return Arrays.copyOf(variants, variants.length);
 	}
 	
 	public static void reset() {
