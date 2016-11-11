@@ -16,7 +16,7 @@ public class RunnerThreaded extends Thread{
 	private JUnitCore core;
 	private Class<?> classes;
 	
-	public RunnerThreaded(JUnitCore core, Class<?> classes) {
+	public RunnerThreaded(Class<?> classes, JUnitCore core) {
 		this.core = core;
 		this.classes = classes;
 	}

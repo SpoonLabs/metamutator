@@ -1,28 +1,17 @@
 package metamutator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.eclipse.jdt.internal.compiler.lookup.MethodVerifier;
-
 import com.google.common.collect.Sets;
-
+import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
+import spoon.reflect.code.CtAssert;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCFlowBreak;
-import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
-import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -43,12 +32,20 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.ReturnOrThrowFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.code.CtLiteralImpl;
-import spoon.reflect.code.CtAssert;
-import spoon.reflect.code.CtAssignment;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class StatementDeletionMetaMutator 
 extends AbstractProcessor<CtStatement> {
@@ -93,15 +90,16 @@ extends AbstractProcessor<CtStatement> {
 	//Templates of returned expressions, used when a function have a return in a statement which can be deleted.
 	private static final Map<Class, CtLiteral> PrimitiveTemplateExpressions;
 	    static {
+			CoreFactory f = new Launcher().getFactory().Core();
 	        HashMap<Class, CtLiteral> map = new HashMap<Class, CtLiteral>();
-	        map.put(byte.class, new CtLiteralImpl<Byte>().setValue((byte) 0));
-	        map.put(short.class, new CtLiteralImpl<Short>().setValue((short) 0));
-	        map.put(int.class, new CtLiteralImpl<Integer>().setValue(0));
-	        map.put(long.class, new CtLiteralImpl<Long>().setValue(0L));
-	        map.put(float.class, new CtLiteralImpl<Float>().setValue(0.0f));
-	        map.put(double.class,new CtLiteralImpl<Double>().setValue(0.0d));
-	        map.put(boolean.class,new CtLiteralImpl<Boolean>().setValue(false));
-	        map.put(char.class,new CtLiteralImpl<Character>().setValue('\u0000'));
+	        map.put(byte.class, f.createLiteral().setValue((byte) 0));
+	        map.put(short.class, f.createLiteral().setValue((short) 0));
+	        map.put(int.class, f.createLiteral().setValue(0));
+	        map.put(long.class, f.createLiteral().setValue(0L));
+	        map.put(float.class, f.createLiteral().setValue(0.0f));
+	        map.put(double.class,f.createLiteral().setValue(0.0d));
+	        map.put(boolean.class,f.createLiteral().setValue(false));
+	        map.put(char.class,f.createLiteral().setValue('\u0000'));
 	        map.put(void.class,null);
 	        PrimitiveTemplateExpressions = Collections.unmodifiableMap(map);
 	    }

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,10 +12,6 @@ import java.io.IOException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-import metamutator.MutantSearchSpaceExplorator;
-import metamutator.RunnerThreaded;
-import resources.ClassSleeping;
-import resources.ClassSleeping2;
 import resources.footest.FooTest;
 
 import org.junit.Test;
@@ -35,26 +32,25 @@ public class MutantSearchSpaceExploratorTest {
 		    Selector.reset();
 	    }
 
-    @Test
-    public void testRunnerThreaded() throws Exception {
-    	JUnitCore core = new JUnitCore();
-    	RunnerThreaded runner = new RunnerThreaded(core, ClassSleeping.class);
-    	assertNull(runner.getResult());
-    	runner.run();
-    	assertEquals(true, runner.getResult() instanceof Result);
-    }
-    
-    
+	static public class failingTest {
+		@Test
+		public void test() {
+
+		}
+	};
+
+
     @Test
     public void testMutantSearchSpaceExplorator() throws Exception {
+
     	JUnitCore core = new JUnitCore();
-    	Result result  = MutantSearchSpaceExplorator.runWithThread(ClassSleeping2.class, core);
+    	Result result  = MutantSearchSpaceExplorator.runWithThread(Object.class, core);
     	assertEquals(1,result.getFailureCount());
-    	assertEquals("interrupted",result.getFailures().get(0).getException().getMessage());
-    	
-    	
-    	result  = MutantSearchSpaceExplorator.runWithThread(ClassSleeping.class, core);
-    	assertNotNull(result);
+    	assertEquals("No runnable methods",result.getFailures().get(0).getException().getMessage());
+
+		Result result2  = MutantSearchSpaceExplorator.runWithThread(failingTest.class, core);
+		assertEquals(0,result2.getFailureCount());
+		assertEquals(1,result2.getRunCount());
     }
     
    

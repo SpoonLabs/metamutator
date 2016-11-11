@@ -1,11 +1,6 @@
 package metamutator;
 
-import java.util.EnumSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.google.common.collect.Sets;
-
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
@@ -16,11 +11,11 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.factory.ClassFactory;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.support.reflect.reference.SpoonClassNotFoundException;
+
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * inserts a mutation hotspot for each binary operator

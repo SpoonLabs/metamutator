@@ -36,33 +36,16 @@ public class MutantSearchSpaceExplorator {
 	public static Result runWithThread(Class<?> classes, JUnitCore core) {
 		int i = 0;
 		// Define Runner
-		RunnerThreaded runner = new RunnerThreaded(core,classes);
+		RunnerThreaded runner = new RunnerThreaded(classes,core);
 		
-		// Launch Class during 8s max 
+		runner.start();
 		try {
-			runner.start();
-			// check the results every 0,1s during 8s Max
-			while(runner.getResult() == null && i < 80) {
-				Thread.sleep(100);
-				i++;
-			}
-			runner.interrupt();
+			runner.join();
 		} catch (InterruptedException e) {
-			
+			throw new RuntimeException("interrupted");
 		}
 		if (runner.getResult()==null) {
-			Result r = new Result() {
-				@Override
-				public int getFailureCount() {return 1;}
-				
-				@Override
-				public java.util.List<org.junit.runner.notification.Failure> getFailures() {
-					List<Failure> l = new ArrayList<Failure>();
-					l.add(new Failure(null, new RuntimeException("interrupted")));
-					return l;
-				}
-			};
-			return r;
+			throw new RuntimeException("interrupted");
 		}
 		
 		return runner.getResult();

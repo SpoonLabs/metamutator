@@ -17,7 +17,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.reference.CtGenericElementReference;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
