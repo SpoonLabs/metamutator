@@ -45,12 +45,11 @@ public class MutantSearchSpaceExploratorTest {
 
     	JUnitCore core = new JUnitCore();
     	Result result  = MutantSearchSpaceExplorator.runWithThread(Object.class, core);
-    	assertEquals(1,result.getFailureCount());
-    	assertEquals("No runnable methods",result.getFailures().get(0).getException().getMessage());
+    	assertEquals(1,result.getFailureCount()); // no runnable methods, no test classes, message change between Junit'4.12 and Junit4.13
 
-		Result result2  = MutantSearchSpaceExplorator.runWithThread(failingTest.class, core);
-		assertEquals(0,result2.getFailureCount());
-		assertEquals(1,result2.getRunCount());
+        Result result2  = MutantSearchSpaceExplorator.runWithThread(failingTest.class, core);
+        assertEquals(0,result2.getFailureCount());
+        assertEquals(1,result2.getRunCount());
     }
     
    
