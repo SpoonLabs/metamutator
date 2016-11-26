@@ -61,9 +61,7 @@ public class NumericExpressionMetaMutatorTest {
         NumericVariableMetaMutator numericPROC = new NumericVariableMetaMutator();
        
         CtVariableRead candidate = l.getFactory().Core().createVariableRead();
-        // Fail On NOT declared variable
-        assertEquals(false,numericPROC.isToBeProcessed(candidate));
-        
+
         // TEST IsNumeric() on typeReference
         // TEST GOOD TYPE
         CtTypeReference type =  l.getFactory().Core().createTypeReference().setSimpleName(int.class.getName());
