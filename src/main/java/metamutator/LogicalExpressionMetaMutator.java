@@ -102,7 +102,7 @@ public class LogicalExpressionMetaMutator extends
 			|| operand.getType().getSimpleName().equals("char")
 		|| operand.getType().getSimpleName().equals("float")
 		|| operand.getType().getSimpleName().equals("double")
-		|| getFactory().Type().createReference(Number.class).isAssignableFrom(operand.getType());
+		|| operand.getType().isSubtypeOf(getFactory().Type().createReference(Number.class));
 	}
 
 /**
