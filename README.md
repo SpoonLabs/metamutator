@@ -3,13 +3,9 @@ metamutator: a meta-mutation tool for Java
 
 [![Build Status](https://travis-ci.org/SpoonLabs/metamutator.svg?branch=master)](https://travis-ci.org/SpoonLabs/metamutator)
 
-```
-mvn test
-```
-
-In the context of this project, a metaprogram is a program with all mutations inserted at compile-time.
+metamutator takes as input a program and produces a metaprogram which contains all possible mutations inserted at compile-time according to a mutant schemata. It is a Java implementation of ["Mutation analysis using mutant schemata"](http://cs.gmu.edu/~offutt/rsrch/papers/schema.pdf). 
 However, the mutations are all desactivated by default, meaning that the metaprogram behaves as the original one.
-Mutations can be activated and desactivated one by one at runtime.
+Metamutants can be activated and desactivated one by one at runtime.
 
 
 Mutation operators
