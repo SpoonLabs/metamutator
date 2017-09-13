@@ -5,3 +5,5 @@ spooned
 .settings
 results
 bin
+.idea
+*.iml

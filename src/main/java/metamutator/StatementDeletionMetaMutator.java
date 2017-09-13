@@ -182,7 +182,7 @@ extends AbstractProcessor<CtStatement> {
 						CtLiteral templateExpression = PrimitiveTemplateExpressions.get(classOfAssignment);
 						rightHand = getFactory().Core().clone(templateExpression);
 					}else{
-						rightHand = new CtLiteralImpl().setValue(null);
+						rightHand = getFactory().createLiteral().setValue(null);
 					}
 					var.setAssignment(rightHand);
 				}
