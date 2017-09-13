@@ -4,14 +4,12 @@ import static org.apache.commons.lang.reflect.MethodUtils.invokeExactMethod;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import bsh.Interpreter;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 
 public class StatementDeletionMetaMutatorTest {
 	
@@ -24,7 +22,7 @@ public class StatementDeletionMetaMutatorTest {
         l.run();
 
         // now we get the code of StatementResource
-        CtClass c = (CtClass) l.getFactory().Package().getRootPackage().getElements(new NameFilter("StatementResource")).get(0);
+        CtClass c = l.getFactory().Package().getRootPackage().getElements(new NamedElementFilter<>(CtClass.class, "StatementResource")).get(0);
         
         // printing the metaprogram
         System.out.println("// Metaprogram: ");

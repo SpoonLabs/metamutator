@@ -2,17 +2,13 @@ package metamutator;
 import static org.junit.Assert.*;
 
 
-import metamutator.LoopExpressionMetaMutator;
-import metamutator.Selector;
-
 import org.junit.Test;
 
 import spoon.Launcher;
-import spoon.reflect.code.CtCodeSnippetStatement;
-import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.visitor.filter.NameFilter;
 import bsh.Interpreter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
+
 import static org.apache.commons.lang.reflect.MethodUtils.*;
 
 public class LoopExpressionMetaMutatorTest {
@@ -26,7 +22,7 @@ public class LoopExpressionMetaMutatorTest {
         l.run();
 
         // now we get the code of Foo
-        CtClass c = (CtClass) l.getFactory().Package().getRootPackage().getElements(new NameFilter("Foo")).get(0);
+        CtClass c = l.getFactory().Package().getRootPackage().getElements(new NamedElementFilter<>(CtClass.class, "Foo")).get(0);
         
         // printing the metaprogram
         System.out.println("// Metaprogram: ");

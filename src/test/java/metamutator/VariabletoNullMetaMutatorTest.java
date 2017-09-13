@@ -5,15 +5,12 @@ import static org.junit.Assert.fail;
 
 import org.junit.BeforeClass;
 
-import metamutator.Selector;
-import metamutator.VariabletoNullMetaMutator;
-
 import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.visitor.filter.NameFilter;
 import bsh.Interpreter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 
 public class VariabletoNullMetaMutatorTest {
 	
@@ -32,7 +29,7 @@ public class VariabletoNullMetaMutatorTest {
         l.addProcessor(new VariabletoNullMetaMutator());
         l.run();
         // now we get the code of Foo
-        CtClass c = (CtClass) l.getFactory().Package().getRootPackage().getElements(new NameFilter("Foo")).get(0);
+        CtClass c = l.getFactory().Package().getRootPackage().getElements(new NamedElementFilter<>(CtClass.class, "Foo")).get(0);
         
         // printing the metaprogram
         System.out.println("// Metaprogram: ");

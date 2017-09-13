@@ -6,7 +6,7 @@ import org.junit.Test;
 import bsh.Interpreter;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 
 public class ConstantReplacementMetaMutatorTest {
 
@@ -20,7 +20,7 @@ public class ConstantReplacementMetaMutatorTest {
         l.addProcessor(new IntegerConstantReplacementMetaMutator());
         l.run();
         // now we get the code of Foo
-        CtClass c = (CtClass) l.getFactory().Package().getRootPackage().getElements(new NameFilter("Bar")).get(0);
+        CtClass c = l.getFactory().Package().getRootPackage().getElements(new NamedElementFilter<>(CtClass.class, "Bar")).get(0);
         
         // printing the metaprogram
         System.out.println("// Metaprogram: ");

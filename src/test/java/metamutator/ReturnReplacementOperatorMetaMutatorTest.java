@@ -6,12 +6,9 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import bsh.Interpreter;
-import metamutator.ArithmeticOperatorMetaMutator;
-import metamutator.ReturnReplacementOperatorMetaMutator;
-import metamutator.Selector;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 
 public class ReturnReplacementOperatorMetaMutatorTest {
 
@@ -24,7 +21,7 @@ public class ReturnReplacementOperatorMetaMutatorTest {
         l.run();
 
         // now we get the code of Foo
-        CtClass c = (CtClass) l.getFactory().Package().getRootPackage().getElements(new NameFilter("Bar")).get(0);
+        CtClass c = l.getFactory().Package().getRootPackage().getElements(new NamedElementFilter<>(CtClass.class, "Bar")).get(0);
         
         // printing the metaprogram
         System.out.println("// Metaprogram: ");
