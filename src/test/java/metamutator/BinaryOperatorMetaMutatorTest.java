@@ -2,15 +2,13 @@ package metamutator;
 import static org.apache.commons.lang.reflect.MethodUtils.invokeExactMethod;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import metamutator.LogicalExpressionMetaMutator;
-import metamutator.Selector;
 
 import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.visitor.filter.NameFilter;
 import bsh.Interpreter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 
 public class BinaryOperatorMetaMutatorTest {
 
@@ -24,7 +22,7 @@ public class BinaryOperatorMetaMutatorTest {
         l.run();
 
         // now we get the code of Foo
-        CtClass c = (CtClass) l.getFactory().Package().getRootPackage().getElements(new NameFilter("Foo")).get(0);
+        CtClass c = l.getFactory().Package().getRootPackage().getElements(new NamedElementFilter<>(CtClass.class, "Foo")).get(0);
         
         // printing the metaprogram
         System.out.println("// Metaprogram: ");

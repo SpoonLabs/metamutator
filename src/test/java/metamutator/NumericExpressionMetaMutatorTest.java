@@ -1,24 +1,15 @@
 package metamutator;
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
 import java.util.List;
-
-import metamutator.LogicalExpressionMetaMutator;
-import metamutator.Selector;
-import metamutator.NumericVariableMetaMutator;
 
 import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtVariableReference;
-import spoon.reflect.visitor.filter.NameFilter;
-import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import bsh.Interpreter;
 import static org.apache.commons.lang.reflect.MethodUtils.*;
 
@@ -33,7 +24,7 @@ public class NumericExpressionMetaMutatorTest {
         l.run();
 
         // now we get the code of Foo
-        CtClass c = (CtClass) l.getFactory().Package().getRootPackage().getElements(new NameFilter("Foo")).get(0);
+        CtClass c = l.getFactory().Package().getRootPackage().getElements(new NamedElementFilter<>(CtClass.class, "Foo")).get(0);
         
         // printing the metaprogram
         System.out.println("// Metaprogram: ");
