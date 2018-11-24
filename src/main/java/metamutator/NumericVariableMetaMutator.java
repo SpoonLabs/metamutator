@@ -57,6 +57,9 @@ public class NumericVariableMetaMutator
 		
 		// SKIP not declared variable and Finale variable
 		if(candidate.getVariable() == null) return false;
+
+		if(candidate.getVariable().getSimpleName().equals("class")) return false;
+
 		if(candidate.getVariable().getModifiers().contains(ModifierKind.FINAL)) return false;
 		
 		
@@ -73,11 +76,7 @@ public class NumericVariableMetaMutator
 		}
 		return false;
 	}
-	/**
-	 * 
-	 * @param ctVariableReference
-	 * @return
-	 */
+
 	public boolean isNumber(CtTypeReference type) {
 		return type.getSimpleName().equals("int")
 			|| type.getSimpleName().equals("long")
