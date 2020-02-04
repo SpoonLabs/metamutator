@@ -24,15 +24,23 @@ Usage
 
 Let's assume your project is called `foo` and contains two folders `src/main/java` and `src/test/java` with a test class `PgmTest`.
 
-1) Create the metaprogram
+Install metamutator
 
-    java -jar spoon.jar -i src/main/java -p metamutator.LogicalExpressionMetaMutator -o spooned
+    git clone https://github.com/SpoonLabs/metamutator.git
+    cd metamutator
+    mvn package
+    # now we have target/metamutator-*-jar-with-dependencies.jar
     
-2) Compile the metaprogram
+    
+Create the metaprogram
+
+    java -jar target/metamutator-*-jar-with-dependencies.jar -i src/main/java -p metamutator.LogicalExpressionMetaMutator -o spooned
+    
+Compile the metaprogram
 
     javac `find spooned -name "*.java"`
     
-3) Run the test class (with the metaprogram in the classpath and not the original program)
+Run the test class (with the metaprogram in the classpath and not the original program)
 
     MutantSearchSpaceExplorator.runMetaProgramWith(PgmTest.class)
     
@@ -43,3 +51,4 @@ Credits
 Based on awesome code by Carlos Fau and Alejandro Russel (<https://github.com/totemcaf/code-fixer/>)
 
 Great contributions from University of Lille's students enrolled in IAGL 2015-2016.
+
